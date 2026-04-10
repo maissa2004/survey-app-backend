@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/nmTypeQuest")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 public class NmTypeQuestController {
 
     @Autowired
@@ -34,7 +34,7 @@ public class NmTypeQuestController {
     @PutMapping("/{id}")
     public NmTypeQuest update(@PathVariable Integer id,
                               @RequestBody NmTypeQuest nmTypeQuest) {
-        nmTypeQuest.setid(id);
+        nmTypeQuest.setId(id);
         return service.save(nmTypeQuest);
     }
 

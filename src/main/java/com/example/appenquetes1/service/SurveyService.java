@@ -1,9 +1,11 @@
 package com.example.appenquetes1.service;
 
 import com.example.appenquetes1.entity.EtatSurvey;
+import com.example.appenquetes1.entity.Question;
 import com.example.appenquetes1.entity.Section;
 import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.repository.SurveyRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,9 +46,23 @@ public class SurveyService {
                 .orElseThrow(() -> new RuntimeException("Survey introuvable"));
     }
 
+    @Transactional
     public Survey getFullSurvey(Integer id) {
-        return repository.findFullSurvey(id)
+        // 🔥 CORRECTION : Définir la variable survey
+        Survey survey = repository.findFullSurvey(id)
                 .orElseThrow(() -> new RuntimeException("Survey introuvable"));
+
+        // Forcer le chargement des réponses
+        survey.getSections().forEach(section -> {
+            section.getSectionQuestions().forEach(sq -> {
+                Question q = sq.getQuestion();
+                // Forcer l'initialisation des réponses
+                q.getAnswers().size();  // Force le chargement
+                System.out.println("Question: " + q.getCode() + ", Answers: " + q.getAnswers().size());
+            });
+        });
+
+        return survey;
     }
 
 

@@ -2,6 +2,7 @@ package com.example.appenquetes1.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public class NmTypeQuest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")  // ← Force l'inclusion dans le JSON
     private Integer id;
     private String code;
     private String libelle;
@@ -35,11 +37,11 @@ public class NmTypeQuest {
         this.dtUpdate = dtUpdate;
     }
 
-    public Integer getid() {
+    public Integer getId() {
         return id;
     }
 
-    public void setid(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

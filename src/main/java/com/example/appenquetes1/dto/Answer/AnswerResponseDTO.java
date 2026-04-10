@@ -1,19 +1,21 @@
 package com.example.appenquetes1.dto.Answer;
 
 import com.example.appenquetes1.dto.question.QuestionResponseDTO;
+import com.example.appenquetes1.dto.section.SectionResponseDTO;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class AnswerResponseDTO {
-    private Integer id; // id de QuestionAnswers
-    private String code; // NmAnswers.code
+    private Integer id;
+    private String code;
     private String reference;
     private String libelle;
     private String libelleEn;
     private LocalDate dtUpdate;
 
     private List<QuestionResponseDTO> condiQuestion;
+    private List<SectionResponseDTO> condiSections;
 
     public AnswerResponseDTO() {}
 
@@ -73,5 +75,11 @@ public class AnswerResponseDTO {
         this.condiQuestion = condiQuestion;
     }
 
-    // getters & setters
+    public List<SectionResponseDTO> getCondiSections() {
+        return condiSections;
+    }
+
+    public void setCondiSections(List<SectionResponseDTO> condiSections) {
+        this.condiSections = condiSections;
+    }
 }

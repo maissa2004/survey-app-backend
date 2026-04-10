@@ -1,10 +1,11 @@
 package com.example.appenquetes1.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "question")
@@ -16,19 +17,14 @@ public class Question {
     private String code;
     private String titleFr;
     private String titleEn;
-    private Boolean isRequired;
-    private Boolean isConditionnel;
+    private String reference;        // ← NOUVEAU
+    private String descriptionFr;    // ← NOUVEAU
+    private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id")
-    @JsonIgnore
-    private Section section;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<QuestionAnswers> answers = new HashSet<>();
 
-    // 🔥 relation vers Answer
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<QuestionAnswers> answers;
 
-    // 🔥 relation récursive via Answer
     @ManyToOne
     @JoinColumn(name = "parent_answer_id")
     @JsonIgnore
@@ -38,25 +34,20 @@ public class Question {
     @JoinColumn(name = "id_nm_type_quest")
     private NmTypeQuest nmtypeQuest;
 
-    @ManyToOne
-    @JoinColumn(name = "id_section_question")
-    private SectionQuestion sectionQuestion;
 
-    public SectionQuestion getSectionQuestion() {
-        return sectionQuestion;
+
+    // Getter et Setter pour id_nm_type_quest
+    public Integer getIdNmTypeQuest() {
+        return nmtypeQuest != null ? nmtypeQuest.getId() : null;
     }
 
-    public void setSectionQuestion(SectionQuestion sectionQuestion) {
-        this.sectionQuestion = sectionQuestion;
-    }
-
-
-    public NmTypeQuest getNmtypeQuest() {
-        return nmtypeQuest;
-    }
-
-    public void setNmtypeQuest(NmTypeQuest nmtypeQuest) {
-        this.nmtypeQuest = nmtypeQuest;
+    // Ajoute cette méthode
+    @JsonProperty("id_nm_type_quest")
+    public void setIdNmTypeQuest(Integer idNmTypeQuest) {
+        if (idNmTypeQuest != null) {
+            this.nmtypeQuest = new NmTypeQuest();
+            this.nmtypeQuest.setId(idNmTypeQuest);
+        }
     }
 
     public Integer getId() {
@@ -90,38 +81,11 @@ public class Question {
     public void setTitleEn(String titleEn) {
         this.titleEn = titleEn;
     }
-
-    public Boolean getRequired() {
-        return isRequired;
-    }
-
-    public void setRequired(Boolean required) {
-        isRequired = required;
-    }
-
-    public Boolean getConditionnel() {
-        return isConditionnel;
-    }
-
-    public void setConditionnel(Boolean conditionnel) {
-        isConditionnel = conditionnel;
-    }
-
-
-
-    public Section getSection() {
-        return section;
-    }
-
-    public void setSection(Section section) {
-        this.section = section;
-    }
-
-    public List<QuestionAnswers> getAnswers() {
+    public Set<QuestionAnswers> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<QuestionAnswers> answers) {
+    public void setAnswers(Set<QuestionAnswers> answers) {
         this.answers = answers;
     }
 
@@ -132,5 +96,14 @@ public class Question {
     public void setParentAnswer(QuestionAnswers parentAnswer) {
         this.parentAnswer = parentAnswer;
     }
-}
 
+    public NmTypeQuest getNmtypeQuest() {
+        return nmtypeQuest;
+    }
+
+    public void setNmtypeQuest(NmTypeQuest nmtypeQuest) {
+        this.nmtypeQuest = nmtypeQuest;
+    }
+
+
+}

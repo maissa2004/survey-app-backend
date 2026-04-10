@@ -15,7 +15,9 @@ public class NmAnswersService {
     private NmAnswersRepository repository;
 
     public NmAnswers save(NmAnswers a) {
-        return repository.save(a);
+        NmAnswers saved = repository.save(a);
+        System.out.println("Service - ID généré: " + saved.getId());
+        return saved;
     }
 
     public List<NmAnswers> findAll() {

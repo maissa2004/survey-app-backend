@@ -17,6 +17,9 @@ public class SectionQuestionController {
 
     @PostMapping
     public SectionQuestion create(@RequestBody SectionQuestion sectionQuestion) {
+        System.out.println("=== RECEIVED SECTION QUESTION ===");
+        System.out.println("section id: " + (sectionQuestion.getSection() != null ? sectionQuestion.getSection().getId() : "null"));
+        System.out.println("question id: " + (sectionQuestion.getQuestion() != null ? sectionQuestion.getQuestion().getId() : "null"));
         return service.save(sectionQuestion);
     }
 

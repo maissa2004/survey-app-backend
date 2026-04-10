@@ -20,14 +20,20 @@ public class SectionMapper {
         dto.setConditionnel(section.isConditionnel());
         dto.setOrdre(section.getOrdre());
 
+        if (section.getSurvey() != null) {
+            dto.setIdSurvey(section.getSurvey().getId());
+        }
+
+        dto.setDtUpdate(section.getDtUpdate());
+
         List<QuestionResponseDTO> questions =
                 section.getSectionQuestions()
                         .stream()
-                        .map(QuestionMapper::toDTO) // ✅ direct sq
+                        .filter(sq -> sq.getQuestion().getParentAnswer() == null)  // ← AJOUTER CE FILTRE
+                        .map(QuestionMapper::toDTO)
                         .toList();
 
         dto.setQuestions(questions);
-
         return dto;
     }
 }

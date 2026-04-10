@@ -3,6 +3,8 @@ package com.example.appenquetes1.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -16,11 +18,12 @@ public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String code;
     private String libelle;
     private String libelleEn;
+    @CreationTimestamp
     private LocalDate dtAdd;
+    @UpdateTimestamp
     private LocalDate dtUpdate;
     private boolean isValid;
     private boolean isFormReference;
@@ -28,7 +31,17 @@ public class Survey {
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY)
     private Set<Section> sections = new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "id_etat_survey")
+    private EtatSurvey etatSurvey;
 
+    public EtatSurvey getEtatSurvey() {
+        return etatSurvey;
+    }
+
+    public void setEtatSurvey(EtatSurvey etatSurvey) {
+        this.etatSurvey = etatSurvey;
+    }
 
     public Survey() {}
 

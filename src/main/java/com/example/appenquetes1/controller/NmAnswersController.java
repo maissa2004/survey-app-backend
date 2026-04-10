@@ -17,7 +17,9 @@ public class NmAnswersController {
 
     @PostMapping
     public NmAnswers create(@RequestBody NmAnswers nmAnswers) {
-        return service.save(nmAnswers);
+        NmAnswers saved = service.save(nmAnswers);
+        System.out.println("✅ NmAnswers créée avec ID: " + saved.getId());
+        return saved;
     }
 
     @GetMapping
@@ -34,7 +36,7 @@ public class NmAnswersController {
     @PutMapping("/{id}")
     public NmAnswers update(@PathVariable Integer id,
                             @RequestBody NmAnswers nmAnswers) {
-        nmAnswers.setid(id);
+        nmAnswers.setId(id);
         return service.save(nmAnswers);
     }
 

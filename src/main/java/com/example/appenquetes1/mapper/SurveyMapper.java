@@ -23,6 +23,8 @@ public class SurveyMapper {
         dto.setSections(
                 survey.getSections()
                         .stream()
+                        // On garde ce filtre pour les sections conditionnelles
+                        .filter(section -> section.getParentAnswer() == null)
                         .map(SectionMapper::toDTO)
                         .collect(Collectors.toList())
         );

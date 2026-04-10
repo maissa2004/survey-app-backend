@@ -2,6 +2,7 @@ package com.example.appenquetes1.controller;
 
 import com.example.appenquetes1.entity.QuestionAnswers;
 import com.example.appenquetes1.service.QuestionAnswersService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,14 @@ public class QuestionAnswersController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         service.delete(id);
+    }
+
+
+    @DeleteMapping("/question/{questionId}")
+    public void deleteByQuestionId(@PathVariable Integer questionId) {
+        System.out.println("🔍 DELETE /questionAnswers/question/" + questionId);
+        service.deleteByQuestionId(questionId);
+        System.out.println("✅ Réponses supprimées pour la question " + questionId);
     }
 }
 

@@ -15,8 +15,6 @@ public class SectionQuestionMapper {
         dto.setIdSectionQues(sq.getId()); // 🔥 IMPORTANT
         dto.setTitleFr(q.getTitleFr());
         dto.setTitleEn(q.getTitleEn());
-        dto.setRequired(sq.isRequired());
-        dto.setConditionnel(q.getConditionnel());
         dto.setCode(q.getCode());
 
         dto.setAnswers(

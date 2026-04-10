@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "question_answers")
@@ -13,18 +14,12 @@ public class QuestionAnswers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String code;
-    private String libelle;
-    private String libelleEn;
-    private String reference;
     private Boolean isConditionnel;
-
     private LocalDate dtUpdate;
 
     @ManyToOne
     @JoinColumn(name = "id_question")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // ← CHANGEMENT ICI
     private Question question;
 
     @ManyToOne
@@ -32,47 +27,26 @@ public class QuestionAnswers {
     private NmAnswers nmAnswers;
 
     @ManyToOne
-    @JoinColumn(name = "id_section_question")
+    @JoinColumn(name = "id_section_quest")
+    @JsonIgnore
     private SectionQuestion sectionQuestion;
 
+    @OneToMany(mappedBy = "parentAnswer", fetch = FetchType.LAZY)
+    private Set<Question> condiQuestions = new HashSet<>();
+
+    @OneToMany(mappedBy = "parentAnswer", fetch = FetchType.LAZY)
+    private Set<Section> condiSections = new HashSet<>();
+
+    private Integer idQuestionTable;     // ← NOUVEAU
+    private Integer idSectionCondition;
+
+    // Getters et Setters
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public String getLibelleEn() {
-        return libelleEn;
-    }
-
-    public void setLibelleEn(String libelleEn) {
-        this.libelleEn = libelleEn;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
     }
 
     public LocalDate getDtUpdate() {
@@ -91,12 +65,43 @@ public class QuestionAnswers {
         this.question = question;
     }
 
-
     public Boolean getIsConditionnel() {
         return isConditionnel;
     }
 
     public void setIsConditionnel(Boolean isConditionnel) {
         this.isConditionnel = isConditionnel;
+    }
+
+    public NmAnswers getNmAnswers() {
+        return nmAnswers;
+    }
+
+    public void setNmAnswers(NmAnswers nmAnswers) {
+        this.nmAnswers = nmAnswers;
+    }
+
+    public SectionQuestion getSectionQuestion() {
+        return sectionQuestion;
+    }
+
+    public void setSectionQuestion(SectionQuestion sectionQuestion) {
+        this.sectionQuestion = sectionQuestion;
+    }
+
+    public Set<Question> getCondiQuestions() {
+        return condiQuestions;
+    }
+
+    public void setCondiQuestions(Set<Question> condiQuestions) {
+        this.condiQuestions = condiQuestions;
+    }
+
+    public Set<Section> getCondiSections() {
+        return condiSections;
+    }
+
+    public void setCondiSections(Set<Section> condiSections) {
+        this.condiSections = condiSections;
     }
 }

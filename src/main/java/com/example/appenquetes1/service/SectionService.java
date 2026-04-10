@@ -2,10 +2,13 @@ package com.example.appenquetes1.service;
 
 import com.example.appenquetes1.entity.Section;
 import com.example.appenquetes1.entity.SectionQuestion;
+import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.repository.SectionRepository;
+import com.example.appenquetes1.repository.SurveyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -14,8 +17,9 @@ public class SectionService {
     @Autowired
     private SectionRepository repository;
 
-    public Section save(Section s) {
-        return repository.save(s);
+    public Section save(Section section) {
+        section.setDtUpdate(LocalDate.now());
+        return repository.save(section);
     }
 
     public List<Section> findAll() {

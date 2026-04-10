@@ -17,6 +17,12 @@ public class QuestionController {
 
     @PostMapping
     public Question create(@RequestBody Question question) {
+        System.out.println("=== RECEIVED QUESTION ===");
+        System.out.println("code: " + question.getCode());
+        System.out.println("titleFr: " + question.getTitleFr());
+        System.out.println("titleEn: " + question.getTitleEn());
+        System.out.println("id_nm_type_quest: " + question.getIdNmTypeQuest());
+        System.out.println("nmtypeQuest: " + question.getNmtypeQuest());
         return service.save(question);
     }
 
@@ -30,12 +36,13 @@ public class QuestionController {
         return service.findById(id);
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public Question update(@PathVariable Integer id,
                            @RequestBody Question question) {
+        System.out.println("=== UPDATE QUESTION ===");
+        System.out.println("ID: " + id);
         question.setId(id);
-        return service.save(question);
+        return service.updateQuestion(id, question);  // ← Utiliser updateQuestion au lieu de save
     }
 
     // DELETE
