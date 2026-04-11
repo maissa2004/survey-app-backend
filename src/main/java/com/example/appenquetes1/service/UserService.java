@@ -47,7 +47,7 @@ public class UserService {
                 request.getEmail(),
                 request.getPhone(),
                 passwordEncoder.encode(request.getPassword()),
-                request.getRole() != null ? request.getRole() : User.Role.enqueteur
+                request.getRole() != null ? request.getRole() : User.Role.admin
         );
 
         User savedUser = userRepository.save(user);
@@ -58,19 +58,41 @@ public class UserService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        System.out.println("=== LOGIN DEBUG ===");
+        System.out.println("Login reçu: " + request.getLogin());
+        System.out.println("Password reçu: " + request.getPassword());
+
+        // Test direct par username
+        Optional<User> byUsername = userRepository.findByUsername(request.getLogin());
+        System.out.println("Recherche par username: " + byUsername.isPresent());
+
+        // Test direct par email
+        Optional<User> byEmail = userRepository.findByEmail(request.getLogin());
+        System.out.println("Recherche par email: " + byEmail.isPresent());
+
+        // Test direct par phone
+        Optional<User> byPhone = userRepository.findByPhone(request.getLogin());
+        System.out.println("Recherche par phone: " + byPhone.isPresent());
+
+        // Test par la méthode générique
         Optional<User> userOpt = userRepository.findByUsernameEmailOrPhone(request.getLogin());
+        System.out.println("Recherche par méthode générique: " + userOpt.isPresent());
 
         if (userOpt.isEmpty()) {
             throw new RuntimeException("Utilisateur non trouvé");
         }
 
         User user = userOpt.get();
+        System.out.println("Utilisateur trouvé: " + user.getUsername());
+
+        boolean passwordMatches = passwordEncoder.matches(request.getPassword(), user.getPasswordHash());
+        System.out.println("Password matches: " + passwordMatches);
 
         if (!user.getIsActive()) {
             throw new RuntimeException("Compte désactivé");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordMatches) {
             throw new RuntimeException("Mot de passe incorrect");
         }
 
@@ -127,5 +149,10 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return true;
+    }
+
+    // NOUVELLE MÉTHODE : Récupère l'entité User brute (non mappée en DTO)
+    public User getRawUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
     }
 }

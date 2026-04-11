@@ -1,3 +1,4 @@
+// com.example.appenquetes1.repository.SessionRepository.java
 package com.example.appenquetes1.repository;
 
 import com.example.appenquetes1.entity.Session;
@@ -10,16 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Integer> {
 
     // Recherche par statut
     List<Session> findByStatus(Session.Status status);
-
-    // Recherche par survey
-    List<Session> findByIdSurvey(Integer surveyId);
 
     // Recherche par période
     List<Session> findByDateDebutBetween(LocalDateTime start, LocalDateTime end);
@@ -35,9 +32,6 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     // Sessions terminées
     @Query("SELECT s FROM Session s WHERE s.status = 'terminee' OR s.dateFin < CURRENT_TIMESTAMP")
     List<Session> findFinishedSessions();
-
-    // Vérifier si un survey a des sessions actives
-    boolean existsByIdSurveyAndStatus(Integer surveyId, Session.Status status);
 
     // Mettre à jour le statut automatiquement
     @Modifying
@@ -57,19 +51,15 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     @Query("UPDATE Session s SET s.status = 'inactive' WHERE s.id = :id AND s.status = 'active'")
     int deactivateSession(@Param("id") Integer id);
 
-    // Compter les sessions actives par survey
-    long countByIdSurveyAndStatus(Integer surveyId, Session.Status status);
-
-    // Récupérer les sessions avec détails du survey
-    @Query("SELECT s FROM Session s LEFT JOIN FETCH s.survey WHERE s.idSurvey = :surveyId")
-    List<Session> findSessionsBySurveyWithDetails(@Param("surveyId") Integer surveyId);
-
-    // Vérifier les conflits de dates pour un survey
-    @Query("SELECT s FROM Session s WHERE s.idSurvey = :surveyId AND " +
+    // Vérifier les conflits de dates
+    @Query("SELECT s FROM Session s WHERE " +
             "((s.dateDebut BETWEEN :debut AND :fin) OR " +
             "(s.dateFin BETWEEN :debut AND :fin) OR " +
             "(:debut BETWEEN s.dateDebut AND s.dateFin))")
-    List<Session> findOverlappingSessions(@Param("surveyId") Integer surveyId,
-                                          @Param("debut") LocalDateTime debut,
+    List<Session> findOverlappingSessions(@Param("debut") LocalDateTime debut,
                                           @Param("fin") LocalDateTime fin);
+
+    // Récupérer les sessions par survey (via la table de liaison)
+    @Query("SELECT DISTINCT s FROM Session s JOIN s.sessionSurveys ss WHERE ss.idSurvey = :surveyId")
+    List<Session> findSessionsBySurveyId(@Param("surveyId") Integer surveyId);
 }

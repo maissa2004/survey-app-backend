@@ -1,8 +1,13 @@
+// com.example.appenquetes1.mapper.SessionMapper.java
 package com.example.appenquetes1.mapper;
 
 import com.example.appenquetes1.dto.session.SessionRequestDTO;
 import com.example.appenquetes1.dto.session.SessionResponseDTO;
 import com.example.appenquetes1.entity.Session;
+import com.example.appenquetes1.entity.SessionSurvey;
+import com.example.appenquetes1.entity.Survey;
+
+import java.util.stream.Collectors;
 
 public class SessionMapper {
 
@@ -17,11 +22,26 @@ public class SessionMapper {
         dto.setStatus(session.getStatus().name());
         dto.setDtCreate(session.getDtCreate());
         dto.setDtUpdate(session.getDtUpdate());
-        dto.setIdSurvey(session.getIdSurvey());
 
-        if (session.getSurvey() != null) {
-            dto.setSurveyCode(session.getSurvey().getCode());
-            dto.setSurveyLibelle(session.getSurvey().getLibelle());
+        // Récupérer la liste des surveys
+        if (session.getSessionSurveys() != null && !session.getSessionSurveys().isEmpty()) {
+            // Premier survey pour l'affichage rapide
+            SessionSurvey first = session.getSessionSurveys().get(0);
+            dto.setIdSurvey(first.getIdSurvey());
+            if (first.getSurvey() != null) {
+                dto.setSurveyCode(first.getSurvey().getCode());
+                dto.setSurveyLibelle(first.getSurvey().getLibelle());
+            }
+
+            // Liste complète des surveys
+            dto.setSurveys(session.getSessionSurveys().stream()
+                    .filter(ss -> ss.getSurvey() != null)
+                    .map(ss -> new SessionResponseDTO.SurveyInfo(
+                            ss.getSurvey().getId(),
+                            ss.getSurvey().getCode(),
+                            ss.getSurvey().getLibelle()
+                    ))
+                    .collect(Collectors.toList()));
         }
 
         return dto;
@@ -34,7 +54,6 @@ public class SessionMapper {
         session.setIntitule(dto.getIntitule());
         session.setDateDebut(dto.getDateDebut());
         session.setDateFin(dto.getDateFin());
-        session.setIdSurvey(dto.getIdSurvey());
 
         if (dto.getStatus() != null) {
             session.setStatus(dto.getStatus());

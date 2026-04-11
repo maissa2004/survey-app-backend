@@ -1,7 +1,10 @@
+// com.example.appenquetes1.entity.Session.java
 package com.example.appenquetes1.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "session")
@@ -30,13 +33,9 @@ public class Session {
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
 
-    @Column(name = "id_survey", nullable = false)
-    private Integer idSurvey;
-
-    // Relations
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_survey", insertable = false, updatable = false)
-    private Survey survey;
+    // Relation OneToMany avec la table de liaison
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SessionSurvey> sessionSurveys = new ArrayList<>();
 
     public enum Status {
         active, inactive, planifiee, terminee
@@ -56,11 +55,10 @@ public class Session {
     // Constructeurs
     public Session() {}
 
-    public Session(String intitule, LocalDateTime dateDebut, LocalDateTime dateFin, Integer idSurvey) {
+    public Session(String intitule, LocalDateTime dateDebut, LocalDateTime dateFin) {
         this.intitule = intitule;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        this.idSurvey = idSurvey;
         this.status = Status.planifiee;
     }
 
@@ -86,9 +84,6 @@ public class Session {
     public LocalDateTime getDtUpdate() { return dtUpdate; }
     public void setDtUpdate(LocalDateTime dtUpdate) { this.dtUpdate = dtUpdate; }
 
-    public Integer getIdSurvey() { return idSurvey; }
-    public void setIdSurvey(Integer idSurvey) { this.idSurvey = idSurvey; }
-
-    public Survey getSurvey() { return survey; }
-    public void setSurvey(Survey survey) { this.survey = survey; }
+    public List<SessionSurvey> getSessionSurveys() { return sessionSurveys; }
+    public void setSessionSurveys(List<SessionSurvey> sessionSurveys) { this.sessionSurveys = sessionSurveys; }
 }

@@ -3,9 +3,11 @@ package com.example.appenquetes1.service;
 import com.example.appenquetes1.dto.session.SessionRequestDTO;
 import com.example.appenquetes1.dto.session.SessionResponseDTO;
 import com.example.appenquetes1.entity.Session;
+import com.example.appenquetes1.entity.SessionSurvey;
 import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.mapper.SessionMapper;
 import com.example.appenquetes1.repository.SessionRepository;
+import com.example.appenquetes1.repository.SessionSurveyRepository;
 import com.example.appenquetes1.repository.SurveyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,23 @@ public class SessionService {
     private SessionRepository sessionRepository;
 
     @Autowired
+    private SessionSurveyRepository sessionSurveyRepository;
+
+    @Autowired
     private SurveyRepository surveyRepository;
 
-    // US26 : Créer une session d'enquête
+    // Dans SessionService.java, méthode createSession
+    @Transactional
     public SessionResponseDTO createSession(SessionRequestDTO request) {
-        // Vérifier que le survey existe
-        Survey survey = surveyRepository.findById(request.getIdSurvey()).orElse(null);
-        if (survey == null) {
-            throw new RuntimeException("Survey non trouvé avec l'id: " + request.getIdSurvey());
+        // Vérifier que les surveys existent
+        if (request.getIdSurveys() == null || request.getIdSurveys().isEmpty()) {
+            throw new RuntimeException("Au moins un survey est requis");
+        }
+
+        for (Integer surveyId : request.getIdSurveys()) {
+            if (!surveyRepository.existsById(surveyId)) {
+                throw new RuntimeException("Survey non trouvé avec l'id: " + surveyId);
+            }
         }
 
         // Vérifier que la date de fin est après la date de début
@@ -37,112 +48,96 @@ public class SessionService {
             throw new RuntimeException("La date de fin doit être après la date de début");
         }
 
-        // Vérifier les chevauchements avec d'autres sessions du même survey
-        List<Session> overlapping = sessionRepository.findOverlappingSessions(
-                request.getIdSurvey(), request.getDateDebut(), request.getDateFin());
-        if (!overlapping.isEmpty()) {
-            throw new RuntimeException("Une session existe déjà sur cette période pour ce survey");
+        // Créer la session
+        Session session = SessionMapper.toEntity(request);
+        Session savedSession = sessionRepository.save(session);
+
+        // Ajouter les relations avec les surveys
+        for (Integer surveyId : request.getIdSurveys()) {
+            SessionSurvey sessionSurvey = new SessionSurvey(savedSession.getId(), surveyId);
+            sessionSurveyRepository.save(sessionSurvey);
         }
 
-        Session session = SessionMapper.toEntity(request);
-        Session saved = sessionRepository.save(session);
-        return SessionMapper.toDTO(saved);
+        // Recharger la session avec les relations
+        Session completeSession = sessionRepository.findById(savedSession.getId()).orElse(null);
+        return SessionMapper.toDTO(completeSession);
     }
 
-    // Récupérer toutes les sessions
+    @Transactional
+    public SessionResponseDTO updateSession(Integer id, SessionRequestDTO request) {
+        Session existing = sessionRepository.findById(id).orElse(null);
+        if (existing == null) return null;
+
+        // Mettre à jour les champs
+        if (request.getIntitule() != null) existing.setIntitule(request.getIntitule());
+        if (request.getDateDebut() != null) existing.setDateDebut(request.getDateDebut());
+        if (request.getDateFin() != null) existing.setDateFin(request.getDateFin());
+        if (request.getStatus() != null) existing.setStatus(request.getStatus());
+
+        Session saved = sessionRepository.save(existing);
+
+        // Mettre à jour les surveys associés
+        if (request.getIdSurveys() != null && !request.getIdSurveys().isEmpty()) {
+            // Supprimer les anciennes relations
+            sessionSurveyRepository.deleteBySessionId(id);
+
+            // Ajouter les nouvelles relations
+            for (Integer surveyId : request.getIdSurveys()) {
+                SessionSurvey sessionSurvey = new SessionSurvey(id, surveyId);
+                sessionSurveyRepository.save(sessionSurvey);
+            }
+        }
+
+        // Recharger la session avec les relations
+        Session completeSession = sessionRepository.findById(id).orElse(null);
+        return SessionMapper.toDTO(completeSession);
+    }
+
     public List<SessionResponseDTO> getAllSessions() {
         return sessionRepository.findAll().stream()
                 .map(SessionMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // Récupérer une session par ID
     public SessionResponseDTO getSessionById(Integer id) {
         Session session = sessionRepository.findById(id).orElse(null);
         return session != null ? SessionMapper.toDTO(session) : null;
     }
 
-    // US28 : Modifier une session (période)
-    public SessionResponseDTO updateSession(Integer id, SessionRequestDTO request) {
-        Session existing = sessionRepository.findById(id).orElse(null);
-        if (existing == null) return null;
-
-        if (request.getIntitule() != null) existing.setIntitule(request.getIntitule());
-        if (request.getDateDebut() != null) existing.setDateDebut(request.getDateDebut());
-        if (request.getDateFin() != null) existing.setDateFin(request.getDateFin());
-        if (request.getIdSurvey() != null) existing.setIdSurvey(request.getIdSurvey());
-
-        Session saved = sessionRepository.save(existing);
-        return SessionMapper.toDTO(saved);
-    }
-
-    // Supprimer une session
+    @Transactional
     public void deleteSession(Integer id) {
+        sessionSurveyRepository.deleteBySessionId(id);
         sessionRepository.deleteById(id);
     }
 
-    // US29 : Activer une session
     @Transactional
     public boolean activateSession(Integer id) {
         Session session = sessionRepository.findById(id).orElse(null);
         if (session == null) return false;
 
-        // Vérifier que la date actuelle est dans la période
         LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(session.getDateDebut()) || now.isAfter(session.getDateFin())) {
             throw new RuntimeException("Impossible d'activer : la session n'est pas dans sa période");
         }
 
-        int updated = sessionRepository.activateSession(id);
-        return updated > 0;
+        session.setStatus(Session.Status.active);
+        sessionRepository.save(session);
+        return true;
     }
 
-    // US29 : Désactiver une session
     @Transactional
     public boolean deactivateSession(Integer id) {
-        int updated = sessionRepository.deactivateSession(id);
-        return updated > 0;
+        Session session = sessionRepository.findById(id).orElse(null);
+        if (session == null) return false;
+
+        session.setStatus(Session.Status.inactive);
+        sessionRepository.save(session);
+        return true;
     }
 
-    // Sessions par statut
     public List<SessionResponseDTO> getSessionsByStatus(Session.Status status) {
         return sessionRepository.findByStatus(status).stream()
                 .map(SessionMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-
-    // Sessions par survey (US27)
-    public List<SessionResponseDTO> getSessionsBySurvey(Integer surveyId) {
-        return sessionRepository.findByIdSurvey(surveyId).stream()
-                .map(SessionMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    // Sessions actives actuellement
-    public List<SessionResponseDTO> getCurrentActiveSessions() {
-        sessionRepository.autoFinishExpiredSessions();
-        return sessionRepository.findCurrentActiveSessions().stream()
-                .map(SessionMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    // Sessions à venir
-    public List<SessionResponseDTO> getUpcomingSessions() {
-        return sessionRepository.findUpcomingSessions().stream()
-                .map(SessionMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    // Sessions terminées
-    public List<SessionResponseDTO> getFinishedSessions() {
-        return sessionRepository.findFinishedSessions().stream()
-                .map(SessionMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    // Mettre à jour automatiquement les statuts
-    @Transactional
-    public void updateSessionStatuses() {
-        sessionRepository.autoFinishExpiredSessions();
     }
 }
