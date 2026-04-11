@@ -19,7 +19,10 @@ public class SurveyMapper {
         dto.setDtUpdate(survey.getDtUpdate());
         dto.setValid(survey.isValid());
         dto.setFormReference(survey.isFormReference());
-
+        dto.setIdUser(survey.getIdUser());
+        if (survey.getUser() != null) {
+            dto.setUsername(survey.getUser().getUsername());
+        }
         dto.setSections(
                 survey.getSections()
                         .stream()

@@ -1,3 +1,4 @@
+// com.example.appenquetes1.controller.SurveyController.java
 package com.example.appenquetes1.controller;
 
 import com.example.appenquetes1.dto.survey.SurveyResponseDTO;
@@ -5,9 +6,11 @@ import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.mapper.SurveyMapper;
 import com.example.appenquetes1.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/survey")
@@ -22,9 +25,46 @@ public class SurveyController {
         return service.save(survey);
     }
 
+    // NOUVEAU : Créer un survey avec un utilisateur spécifique
+    @PostMapping("/user/{userId}")
+    public ResponseEntity<Survey> createForUser(@PathVariable Integer userId, @RequestBody Survey survey) {
+        Survey created = service.createSurvey(survey, userId);
+        return ResponseEntity.ok(created);
+    }
+
     @GetMapping
     public List<Survey> getAllSurveys() {
         return service.findAll();
+    }
+
+    // NOUVEAU : Récupérer les surveys d'un utilisateur
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<SurveyResponseDTO>> getSurveysByUser(@PathVariable Integer userId) {
+        List<Survey> surveys = service.getSurveysByUser(userId);
+        List<SurveyResponseDTO> dtos = surveys.stream()
+                .map(SurveyMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    // NOUVEAU : Récupérer les surveys actifs d'un utilisateur
+    @GetMapping("/user/{userId}/active")
+    public ResponseEntity<List<SurveyResponseDTO>> getActiveSurveysByUser(@PathVariable Integer userId) {
+        List<Survey> surveys = service.getActiveSurveysByUser(userId);
+        List<SurveyResponseDTO> dtos = surveys.stream()
+                .map(SurveyMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    // NOUVEAU : Récupérer les surveys avec détails par utilisateur
+    @GetMapping("/user/{userId}/full")
+    public ResponseEntity<List<SurveyResponseDTO>> getFullSurveysByUser(@PathVariable Integer userId) {
+        List<Survey> surveys = service.getSurveysByUserWithDetails(userId);
+        List<SurveyResponseDTO> dtos = surveys.stream()
+                .map(SurveyMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
@@ -32,15 +72,12 @@ public class SurveyController {
         return service.findById(id);
     }
 
-    // UPDATE
     @PutMapping("/{id}")
-    public Survey update(@PathVariable Integer id,
-                         @RequestBody Survey survey) {
+    public Survey update(@PathVariable Integer id, @RequestBody Survey survey) {
         survey.setId(id);
         return service.save(survey);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         service.delete(id);
@@ -51,15 +88,9 @@ public class SurveyController {
         return service.getSurveyWithSections(id);
     }
 
-
     @GetMapping("/full/{id}")
     public SurveyResponseDTO getFullSurvey(@PathVariable Integer id) {
-
         Survey survey = service.getFullSurvey(id);
-
         return SurveyMapper.toDTO(survey);
     }
-
-
 }
-

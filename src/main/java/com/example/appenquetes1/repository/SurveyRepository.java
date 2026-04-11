@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SurveyRepository extends JpaRepository<Survey, Integer> {
@@ -26,4 +27,15 @@ LEFT JOIN FETCH cqa.nmAnswers
 LEFT JOIN FETCH qa.condiSections cs
 WHERE s.id = :id
 """)
-    Optional<Survey> findFullSurvey(@Param("id") Integer id);}
+
+    Optional<Survey> findFullSurvey(@Param("id") Integer id);
+    List<Survey> findByIdUser(Integer userId);
+
+    List<Survey> findByIdUserAndIsValid(Integer userId, boolean isValid);
+
+    @Query("SELECT s FROM Survey s WHERE s.idUser = :userId ORDER BY s.dtUpdate DESC")
+    List<Survey> findSurveysByUserOrderByDate(@Param("userId") Integer userId);
+
+    @Query("SELECT DISTINCT s FROM Survey s LEFT JOIN FETCH s.sections WHERE s.idUser = :userId")
+    List<Survey> findSurveysByUserWithSections(@Param("userId") Integer userId);
+}

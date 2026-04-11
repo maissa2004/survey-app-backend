@@ -15,6 +15,9 @@ public class SurveyResponseDTO {
     private LocalDate dtUpdate;
     private boolean isValid;
     private boolean isFormReference;
+    private Integer idUser;
+    private String username;
+
 
     private List<SectionResponseDTO> sections;
 
@@ -109,5 +112,9 @@ public class SurveyResponseDTO {
         this.sections = sections;
     }
 
-    // getters & setters
+    public Integer getIdUser() { return idUser; }
+    public void setIdUser(Integer idUser) { this.idUser = idUser; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 }
