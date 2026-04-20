@@ -5,9 +5,11 @@ import com.example.appenquetes1.dto.useranswer.UserAnswerRequestDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswerResponseDTO;
 import com.example.appenquetes1.entity.Answers;
 import com.example.appenquetes1.entity.NmAnswers;
+import com.example.appenquetes1.entity.QuestionAnswers;
 import com.example.appenquetes1.mapper.AnswersMapper;
 import com.example.appenquetes1.repository.AnswersRepository;
 import com.example.appenquetes1.repository.NmAnswersRepository;
+import com.example.appenquetes1.repository.QuestionAnswersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,9 @@ public class AnswersService {
 
     @Autowired
     private NmAnswersRepository nmAnswersRepository;
+
+    @Autowired
+    private QuestionAnswersRepository questionAnswersRepository;
 
     public UserAnswerResponseDTO save(UserAnswerRequestDTO request) {
         Answers answer = AnswersMapper.toEntity(request);
@@ -87,11 +92,15 @@ public class AnswersService {
         List<Answers> answers = requests.stream()
                 .map(dto -> {
                     Answers answer = AnswersMapper.toEntity(dto);
-                    // Replace transient NmAnswers stubs with managed JPA proxies
-                    // so Hibernate can resolve the FK in the answer_nm_answer join table
+                    // The frontend sends QuestionAnswers.id values in idNmAnswer.
+                    // Resolve each to its associated NmAnswers entity so the FK
+                    // in answer_nm_answer (nm_answer_id → nm_answers.id) is satisfied.
                     if (dto.getIdNmAnswer() != null && !dto.getIdNmAnswer().isEmpty()) {
                         List<NmAnswers> managed = dto.getIdNmAnswer().stream()
-                                .map(id -> nmAnswersRepository.getReferenceById(id))
+                                .map(questionAnswersId -> questionAnswersRepository.findById(questionAnswersId)
+                                        .map(QuestionAnswers::getNmAnswers)
+                                        .orElse(null))
+                                .filter(java.util.Objects::nonNull)
                                 .collect(Collectors.toList());
                         answer.setNmAnswers(managed);
                     }
