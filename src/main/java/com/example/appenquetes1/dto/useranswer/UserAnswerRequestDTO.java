@@ -1,6 +1,9 @@
 // com.example.appenquetes1.dto.useranswer.UserAnswerRequestDTO.java
 package com.example.appenquetes1.dto.useranswer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserAnswerRequestDTO {
     private Integer idSectionQuest;
     private Integer idUser;
@@ -9,7 +12,7 @@ public class UserAnswerRequestDTO {
     private String referenceCode;
     private String fileType;
     private Integer fileSize;
-    private Integer idNmAnswer;
+    private List<Integer> idNmAnswer;
     private String codeQuestion;
     private Integer idSurvey;
 
@@ -35,8 +38,11 @@ public class UserAnswerRequestDTO {
     public Integer getFileSize() { return fileSize; }
     public void setFileSize(Integer fileSize) { this.fileSize = fileSize; }
 
-    public Integer getIdNmAnswer() { return idNmAnswer; }
-    public void setIdNmAnswer(Integer idNmAnswer) { this.idNmAnswer = idNmAnswer; }
+    public List<Integer> getIdNmAnswer() { return idNmAnswer; }
+
+    public void setIdNmAnswer(List<Integer> idNmAnswer) {
+        this.idNmAnswer = idNmAnswer;
+    }
 
     public String getCodeQuestion() { return codeQuestion; }
     public void setCodeQuestion(String codeQuestion) { this.codeQuestion = codeQuestion; }

@@ -28,8 +28,7 @@ public class Survey {
     private boolean isValid;
     private boolean isFormReference;
 
-    @Column(name = "id_user")
-    private Integer idUser;
+
 
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY)
     private Set<Section> sections = new HashSet<>();
@@ -39,9 +38,7 @@ public class Survey {
     private EtatSurvey etatSurvey;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user", insertable = false, updatable = false)
-    private User user;
+
 
     public EtatSurvey getEtatSurvey() {
         return etatSurvey;
@@ -67,7 +64,6 @@ public class Survey {
         this.isValid = isValid;
         this.isFormReference = isFormReference;
         this.sections = sections;
-        this.idUser = idUser;
 
     }
 
@@ -105,11 +101,7 @@ public class Survey {
     public void setFormReference(boolean formReference) {
         isFormReference = formReference;
     }
-    public Integer getIdUser() { return idUser; }
-    public void setIdUser(Integer idUser) { this.idUser = idUser; }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
 
 
 }

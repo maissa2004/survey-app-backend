@@ -2,6 +2,7 @@
 package com.example.appenquetes1.dto.useranswer;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserAnswerResponseDTO {
     private Integer id;
@@ -12,7 +13,7 @@ public class UserAnswerResponseDTO {
     private String referenceCode;
     private String fileType;
     private Integer fileSize;
-    private Integer idNmAnswer;
+    private List<Integer> idNmAnswer;
     private LocalDateTime dtUpdate;
     private String codeQuestion;
     private Integer idSurvey;
@@ -49,8 +50,8 @@ public class UserAnswerResponseDTO {
     public Integer getFileSize() { return fileSize; }
     public void setFileSize(Integer fileSize) { this.fileSize = fileSize; }
 
-    public Integer getIdNmAnswer() { return idNmAnswer; }
-    public void setIdNmAnswer(Integer idNmAnswer) { this.idNmAnswer = idNmAnswer; }
+    public List<Integer> getIdNmAnswer() { return idNmAnswer; }
+    public void setIdNmAnswer(List<Integer> idNmAnswer) { this.idNmAnswer = idNmAnswer; }
 
     public LocalDateTime getDtUpdate() { return dtUpdate; }
     public void setDtUpdate(LocalDateTime dtUpdate) { this.dtUpdate = dtUpdate; }

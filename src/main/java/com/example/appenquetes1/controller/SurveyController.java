@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/survey")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = {"http://localhost:4200", "*"})
+
 public class SurveyController {
 
     @Autowired
@@ -25,47 +26,12 @@ public class SurveyController {
         return service.save(survey);
     }
 
-    // NOUVEAU : Créer un survey avec un utilisateur spécifique
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<Survey> createForUser(@PathVariable Integer userId, @RequestBody Survey survey) {
-        Survey created = service.createSurvey(survey, userId);
-        return ResponseEntity.ok(created);
-    }
-
     @GetMapping
     public List<Survey> getAllSurveys() {
         return service.findAll();
     }
 
-    // NOUVEAU : Récupérer les surveys d'un utilisateur
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<SurveyResponseDTO>> getSurveysByUser(@PathVariable Integer userId) {
-        List<Survey> surveys = service.getSurveysByUser(userId);
-        List<SurveyResponseDTO> dtos = surveys.stream()
-                .map(SurveyMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
 
-    // NOUVEAU : Récupérer les surveys actifs d'un utilisateur
-    @GetMapping("/user/{userId}/active")
-    public ResponseEntity<List<SurveyResponseDTO>> getActiveSurveysByUser(@PathVariable Integer userId) {
-        List<Survey> surveys = service.getActiveSurveysByUser(userId);
-        List<SurveyResponseDTO> dtos = surveys.stream()
-                .map(SurveyMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
-
-    // NOUVEAU : Récupérer les surveys avec détails par utilisateur
-    @GetMapping("/user/{userId}/full")
-    public ResponseEntity<List<SurveyResponseDTO>> getFullSurveysByUser(@PathVariable Integer userId) {
-        List<Survey> surveys = service.getSurveysByUserWithDetails(userId);
-        List<SurveyResponseDTO> dtos = surveys.stream()
-                .map(SurveyMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
 
     @GetMapping("/{id}")
     public Survey getById(@PathVariable Integer id) {

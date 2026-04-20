@@ -4,6 +4,9 @@ package com.example.appenquetes1.mapper;
 import com.example.appenquetes1.dto.useranswer.UserAnswerRequestDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswerResponseDTO;
 import com.example.appenquetes1.entity.Answers;
+import com.example.appenquetes1.entity.NmAnswers;
+
+import java.util.ArrayList;
 
 public class AnswersMapper {
 
@@ -19,7 +22,14 @@ public class AnswersMapper {
         dto.setReferenceCode(answer.getReferenceCode());
         dto.setFileType(answer.getFileType());
         dto.setFileSize(answer.getFileSize());
-        dto.setIdNmAnswer(answer.getIdNmAnswer());
+
+        dto.setIdNmAnswer(
+                answer.getNmAnswers() != null
+                        ? answer.getNmAnswers().stream()
+                        .map(NmAnswers::getId)
+                        .toList()
+                        : null
+        );
         dto.setDtUpdate(answer.getDtUpdate());
         dto.setCodeQuestion(answer.getCodeQuestion());
         dto.setIdSurvey(answer.getIdSurvey());
@@ -27,13 +37,20 @@ public class AnswersMapper {
         if (answer.getUser() != null) {
             dto.setUsername(answer.getUser().getUsername());
         }
-        if (answer.getNmAnswer() != null) {
-            dto.setNmAnswerLibelle(answer.getNmAnswer().getLibelle());
-            dto.setNmAnswerCode(answer.getNmAnswer().getCode());
-        }
-        if (answer.getSurvey() != null) {
-            dto.setSurveyCode(answer.getSurvey().getCode());
-            dto.setSurveyLibelle(answer.getSurvey().getLibelle());
+        if (answer.getNmAnswers() != null) {
+            dto.setNmAnswerCode(
+                    answer.getNmAnswers().stream()
+                            .map(NmAnswers::getCode)
+                            .toList()
+                            .toString()
+            );
+
+            dto.setNmAnswerLibelle(
+                    answer.getNmAnswers().stream()
+                            .map(NmAnswers::getLibelle)
+                            .toList()
+                            .toString()
+            );
         }
 
         return dto;
@@ -50,7 +67,15 @@ public class AnswersMapper {
         answer.setReferenceCode(dto.getReferenceCode() != null ? dto.getReferenceCode() : "");
         answer.setFileType(dto.getFileType() != null ? dto.getFileType() : "");
         answer.setFileSize(dto.getFileSize() != null ? dto.getFileSize() : 0);
-        answer.setIdNmAnswer(dto.getIdNmAnswer());
+        if (dto.getIdNmAnswer() != null && !dto.getIdNmAnswer().isEmpty()) {
+            answer.setNmAnswers(
+                dto.getIdNmAnswer().stream()
+                        .map(id -> {
+                            NmAnswers n = new NmAnswers();
+                            n.setId(id);
+                            return n;
+                        }).toList()
+        );}
         answer.setCodeQuestion(dto.getCodeQuestion());
         answer.setIdSurvey(dto.getIdSurvey());
 

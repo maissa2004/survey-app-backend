@@ -17,7 +17,7 @@ public class JwtUtil {
     @Value("${jwt.secret:mySecretKeyForJWTTokenGeneration2025!VeryLongAndSecureKeyForProduction}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}")
+    @Value("${jwt.expiration:864000000000000000000000000000000000000000000000000000000000}")
     private Long expiration;
 
     private Key getSigningKey() {
@@ -26,7 +26,7 @@ public class JwtUtil {
 
     public String generateToken(String username, String role, Integer userId) {
         return Jwts.builder()
-                .setSubject(username)           // ← Utiliser setSubject au lieu de subject
+                .setSubject(username)
                 .claim("role", role)
                 .claim("userId", userId)
                 .setIssuedAt(new Date())

@@ -25,12 +25,13 @@ public class AnswersService {
         return AnswersMapper.toDTO(saved);
     }
 
+
     public List<UserAnswerResponseDTO> saveAll(List<UserAnswerRequestDTO> requests) {
         List<Answers> answers = requests.stream()
                 .map(AnswersMapper::toEntity)
                 .collect(Collectors.toList());
-        List<Answers> saved = answersRepository.saveAll(answers);
-        return saved.stream()
+        List<Answers> savedList = answersRepository.saveAll(answers);
+        return savedList.stream()
                 .map(AnswersMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -66,6 +67,23 @@ public class AnswersService {
     @Transactional
     public void deleteByUserAndSurvey(Integer userId, Integer surveyId) {
         answersRepository.deleteByUserIdAndSurveyId(userId, surveyId);
+    }
+
+    public void submitSurveyAnswers(List<UserAnswerRequestDTO> requests) {
+
+        if (requests.isEmpty()) return;
+
+        Integer userId = requests.get(0).getIdUser();
+        Integer surveyId = requests.get(0).getIdSurvey();
+
+        // Pour eviter le dedoublement des reponses(entre new et old answers)
+        //answersRepository.deleteByUserIdAndSurveyId(userId, surveyId);
+
+        List<Answers> answers = requests.stream()
+                .map(AnswersMapper::toEntity)
+                .toList();
+
+        answersRepository.saveAll(answers);
     }
 
     public long countUserAnswers(Integer userId, Integer surveyId) {

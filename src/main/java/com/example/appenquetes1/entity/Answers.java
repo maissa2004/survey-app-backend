@@ -2,6 +2,7 @@ package com.example.appenquetes1.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "answers")
@@ -17,7 +18,7 @@ public class Answers {
     @Column(name = "id_user")
     private Integer idUser;
 
-    @Column(length = 255)
+    @Column(columnDefinition = "LONGTEXT")
     private String value;
 
     @Column(name = "file_name", nullable = false)
@@ -32,8 +33,13 @@ public class Answers {
     @Column(name = "file_size", nullable = false)
     private Integer fileSize = 0;
 
-    @Column(name = "id_nm_answer")
-    private Integer idNmAnswer;
+    @ManyToMany
+    @JoinTable(
+            name = "answer_nm_answer",
+            joinColumns = @JoinColumn(name = "answer_id"),
+            inverseJoinColumns = @JoinColumn(name = "nm_answer_id")
+    )
+    private List<NmAnswers> nmAnswers;
 
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
@@ -49,9 +55,6 @@ public class Answers {
     @JoinColumn(name = "id_user", insertable = false, updatable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_nm_answer", insertable = false, updatable = false)
-    private NmAnswers nmAnswer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_survey", insertable = false, updatable = false)
@@ -98,8 +101,14 @@ public class Answers {
     public Integer getFileSize() { return fileSize; }
     public void setFileSize(Integer fileSize) { this.fileSize = fileSize; }
 
-    public Integer getIdNmAnswer() { return idNmAnswer; }
-    public void setIdNmAnswer(Integer idNmAnswer) { this.idNmAnswer = idNmAnswer; }
+
+    public List<NmAnswers> getNmAnswers() {
+        return nmAnswers;
+    }
+
+    public void setNmAnswers(List<NmAnswers> nmAnswers) {
+        this.nmAnswers = nmAnswers;
+    }
 
     public LocalDateTime getDtUpdate() { return dtUpdate; }
     public void setDtUpdate(LocalDateTime dtUpdate) { this.dtUpdate = dtUpdate; }
@@ -113,8 +122,6 @@ public class Answers {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
-    public NmAnswers getNmAnswer() { return nmAnswer; }
-    public void setNmAnswer(NmAnswers nmAnswer) { this.nmAnswer = nmAnswer; }
 
     public Survey getSurvey() { return survey; }
     public void setSurvey(Survey survey) { this.survey = survey; }

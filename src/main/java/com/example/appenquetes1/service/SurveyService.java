@@ -21,11 +21,6 @@ public class SurveyService {
         return repository.save(s);
     }
 
-    public Survey createSurvey(Survey survey, Integer userId) {
-        survey.setIdUser(userId);
-        return repository.save(survey);
-    }
-
     public List<Survey> findAll() {
         return repository.findAll();
     }
@@ -68,22 +63,6 @@ public class SurveyService {
         });
 
         return survey;
-    }
-
-    public List<Survey> getSurveysByUser(Integer userId) {
-        return repository.findByIdUser(userId);
-    }
-
-    public List<Survey> getActiveSurveysByUser(Integer userId) {
-        return repository.findByIdUserAndIsValid(userId, true);
-    }
-
-    public List<Survey> getSurveysByUserOrdered(Integer userId) {
-        return repository.findSurveysByUserOrderByDate(userId);
-    }
-
-    public List<Survey> getSurveysByUserWithDetails(Integer userId) {
-        return repository.findSurveysByUserWithSections(userId);
     }
 
 
