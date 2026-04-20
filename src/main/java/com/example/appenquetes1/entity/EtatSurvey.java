@@ -25,10 +25,7 @@ public class EtatSurvey {
         this.dtUpdate = dtUpdate;
     }
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "id_survey")
-    private Survey survey;
+
 
     public Integer getid() {
         return id;
@@ -54,11 +51,5 @@ public class EtatSurvey {
         this.dtUpdate = dtUpdate;
     }
 
-    public Survey getSurvey() {
-        return survey;
-    }
 
-    public void setSurvey(Survey survey) {
-        this.survey = survey;
-    }
 }

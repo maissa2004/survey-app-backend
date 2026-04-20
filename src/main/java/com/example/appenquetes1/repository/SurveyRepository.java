@@ -26,4 +26,12 @@ LEFT JOIN FETCH cqa.nmAnswers
 LEFT JOIN FETCH qa.condiSections cs
 WHERE s.id = :id
 """)
+<<<<<<< Updated upstream
     Optional<Survey> findFullSurvey(@Param("id") Integer id);}
+=======
+
+    Optional<Survey> findFullSurvey(@Param("id") Integer id);
+
+
+}
+>>>>>>> Stashed changes

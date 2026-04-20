@@ -1,5 +1,6 @@
 package com.example.appenquetes1.dto.survey;
 
+import com.example.appenquetes1.dto.etatSurvey.EtatSurveyResponseDTO;
 import com.example.appenquetes1.dto.section.SectionResponseDTO;
 
 import java.time.LocalDate;
@@ -13,8 +14,11 @@ public class SurveyResponseDTO {
     private String libelleEn;
     private LocalDate dtAdd;
     private LocalDate dtUpdate;
-    private boolean isValid;
     private boolean isFormReference;
+<<<<<<< Updated upstream
+=======
+    private Integer idEtatSurvey;
+>>>>>>> Stashed changes
 
     private List<SectionResponseDTO> sections;
 
@@ -32,7 +36,6 @@ public class SurveyResponseDTO {
         this.libelleEn = libelleEn;
         this.dtAdd = dtAdd;
         this.dtUpdate = dtUpdate;
-        this.isValid = isValid;
         this.isFormReference = isFormReference;
         this.sections = sections;
     }
@@ -85,14 +88,6 @@ public class SurveyResponseDTO {
         this.dtUpdate = dtUpdate;
     }
 
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public void setValid(boolean valid) {
-        isValid = valid;
-    }
-
     public boolean isFormReference() {
         return isFormReference;
     }
@@ -109,5 +104,10 @@ public class SurveyResponseDTO {
         this.sections = sections;
     }
 
+<<<<<<< Updated upstream
     // getters & setters
+=======
+    public Integer getIdEtatSurvey() { return idEtatSurvey; }
+    public void setIdEtatSurvey(Integer idEtatSurvey) { this.idEtatSurvey = idEtatSurvey; }
+>>>>>>> Stashed changes
 }
