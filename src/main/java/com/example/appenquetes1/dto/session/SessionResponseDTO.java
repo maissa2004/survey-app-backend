@@ -1,8 +1,6 @@
-// com.example.appenquetes1.dto.session.SessionResponseDTO.java
 package com.example.appenquetes1.dto.session;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SessionResponseDTO {
@@ -22,47 +20,25 @@ public class SessionResponseDTO {
     // Liste complète des surveys
     private List<SurveyInfo> surveys;
 
-    // Liste des enquêteurs
-    private List<SessionEnqueteurResponseDTO> enqueteurs;
-
-    // ========== Classe interne SurveyInfo ==========
     public static class SurveyInfo {
         private Integer id;
-        private Integer sessionSurveyId;  // ← NOUVEAU
         private String code;
         private String libelle;
-        private List<SessionEnqueteurResponseDTO> enqueteurs;
 
-        // Constructeur avec 4 paramètres (ID survey, ID session_survey, code, libelle)
-        public SurveyInfo(Integer id, Integer sessionSurveyId, String code, String libelle) {
-            this.id = id;
-            this.sessionSurveyId = sessionSurveyId;
-            this.code = code;
-            this.libelle = libelle;
-            this.enqueteurs = new ArrayList<>();
-        }
-
-        // Constructeur avec 3 paramètres (pour compatibilité)
         public SurveyInfo(Integer id, String code, String libelle) {
             this.id = id;
             this.code = code;
             this.libelle = libelle;
-            this.enqueteurs = new ArrayList<>();
         }
 
-        // Getters
         public Integer getId() { return id; }
-        public Integer getSessionSurveyId() { return sessionSurveyId; }
-        public String getCode() { return code; }
-        public String getLibelle() { return libelle; }
-        public List<SessionEnqueteurResponseDTO> getEnqueteurs() { return enqueteurs; }
-
-        // Setters
         public void setId(Integer id) { this.id = id; }
-        public void setSessionSurveyId(Integer sessionSurveyId) { this.sessionSurveyId = sessionSurveyId; }
+
+        public String getCode() { return code; }
         public void setCode(String code) { this.code = code; }
+
+        public String getLibelle() { return libelle; }
         public void setLibelle(String libelle) { this.libelle = libelle; }
-        public void setEnqueteurs(List<SessionEnqueteurResponseDTO> enqueteurs) { this.enqueteurs = enqueteurs; }
     }
 
     // Getters et Setters
@@ -98,7 +74,4 @@ public class SessionResponseDTO {
 
     public List<SurveyInfo> getSurveys() { return surveys; }
     public void setSurveys(List<SurveyInfo> surveys) { this.surveys = surveys; }
-
-    public List<SessionEnqueteurResponseDTO> getEnqueteurs() { return enqueteurs; }
-    public void setEnqueteurs(List<SessionEnqueteurResponseDTO> enqueteurs) { this.enqueteurs = enqueteurs; }
 }

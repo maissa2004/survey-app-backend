@@ -2,16 +2,6 @@
 package com.example.appenquetes1.entity;
 
 import jakarta.persistence.*;
-import jakarta.websocket.Session;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "session_survey")
@@ -34,10 +24,6 @@ public class SessionSurvey {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_survey", insertable = false, updatable = false)
     private Survey survey;
-
-    // ✅ AJOUTER LA RELATION AVEC LES ENQUÊTEURS
-    @OneToMany(mappedBy = "sessionSurvey", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<SessionEnqueteur> enqueteurs = new ArrayList<>();
 
     // Constructeurs
     public SessionSurvey() {}
@@ -62,8 +48,4 @@ public class SessionSurvey {
 
     public Survey getSurvey() { return survey; }
     public void setSurvey(Survey survey) { this.survey = survey; }
-
-    public List<SessionEnqueteur> getEnqueteurs() { return enqueteurs; }
-    public void setEnqueteurs(List<SessionEnqueteur> enqueteurs) { this.enqueteurs = enqueteurs; }
-
 }
