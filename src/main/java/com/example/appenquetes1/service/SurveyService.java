@@ -65,13 +65,5 @@ public class SurveyService {
         return survey;
     }
 
-<<<<<<< Updated upstream
-=======
-
-
-
-
->>>>>>> Stashed changes
-
 }
 

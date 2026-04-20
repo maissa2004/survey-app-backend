@@ -18,19 +18,16 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByPhone(String phone);
 
-<<<<<<< Updated upstream
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
 
     boolean existsByPhone(String phone);
-=======
     // ✅ MÉTHODE se trouve dans sessionservice
     List<User> findByRole(User.Role role);
 
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.id NOT IN :excludedIds")
     List<User> findByRoleAndIdNotIn(@Param("role") User.Role role, @Param("excludedIds") List<Integer> excludedIds);
->>>>>>> Stashed changes
 
     @Query("SELECT u FROM User u WHERE u.username = :login OR u.email = :login OR u.phone = :login")
     Optional<User> findByUsernameEmailOrPhone(@Param("login") String login);

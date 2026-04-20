@@ -7,13 +7,14 @@ import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.mapper.SurveyMapper;
 import com.example.appenquetes1.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/survey")
-//@CrossOrigin(origins = "http://localhost:4200")
 public class SurveyController {
 
     @Autowired
@@ -23,18 +24,13 @@ public class SurveyController {
     public Survey create(@RequestBody SurveyCreateDTO createDTO) {
         System.out.println("📥 Création survey - idEtatSurvey: " + createDTO.getIdEtatSurvey());
 
-<<<<<<< Updated upstream
-    @GetMapping
-    public List<Survey> getAllSurveys() {
-        return service.findAll();
-=======
         Survey survey = new Survey();
         survey.setCode(createDTO.getCode());
         survey.setLibelle(createDTO.getLibelle());
         survey.setLibelleEn(createDTO.getLibelleEn());
         survey.setFormReference(createDTO.isFormReference());
 
-        // 🔥 Gérer l'état
+        // Gérer l'état
         if (createDTO.getIdEtatSurvey() != null) {
             EtatSurvey etat = new EtatSurvey();
             etat.setid(createDTO.getIdEtatSurvey());
@@ -50,7 +46,6 @@ public class SurveyController {
         return surveys.stream()
                 .map(SurveyMapper::toDTO)
                 .collect(Collectors.toList());
->>>>>>> Stashed changes
     }
 
     @GetMapping("/{id}")
@@ -62,14 +57,7 @@ public class SurveyController {
         return ResponseEntity.ok(SurveyMapper.toDTO(survey));
     }
 
-    // UPDATE
     @PutMapping("/{id}")
-<<<<<<< Updated upstream
-    public Survey update(@PathVariable Integer id,
-                         @RequestBody Survey survey) {
-        survey.setId(id);
-        return service.save(survey);
-=======
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody SurveyCreateDTO updateDTO) {
         System.out.println("📥 Mise à jour survey ID: " + id);
         System.out.println("📥 idEtatSurvey reçu: " + updateDTO.getIdEtatSurvey());
@@ -89,7 +77,6 @@ public class SurveyController {
 
         // 3. Gérer l'état
         if (updateDTO.getIdEtatSurvey() != null) {
-            // Récupérer l'état existant depuis la base
             EtatSurvey etat = new EtatSurvey();
             etat.setid(updateDTO.getIdEtatSurvey());
             survey.setEtatSurvey(etat);
@@ -100,10 +87,8 @@ public class SurveyController {
         System.out.println("✅ Survey mis à jour avec succès: " + saved.getId());
 
         return ResponseEntity.ok(saved);
->>>>>>> Stashed changes
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         service.delete(id);
@@ -114,15 +99,9 @@ public class SurveyController {
         return service.getSurveyWithSections(id);
     }
 
-
     @GetMapping("/full/{id}")
     public SurveyResponseDTO getFullSurvey(@PathVariable Integer id) {
-
         Survey survey = service.getFullSurvey(id);
-
         return SurveyMapper.toDTO(survey);
     }
-
-
 }
-

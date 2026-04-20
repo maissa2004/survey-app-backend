@@ -28,11 +28,6 @@ public class Survey {
     private boolean isValid;
     private boolean isFormReference;
 
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY)
     private Set<Section> sections = new HashSet<>();
 
@@ -68,10 +63,7 @@ public class Survey {
         this.isValid = isValid;
         this.isFormReference = isFormReference;
         this.sections = sections;
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
     }
 
 
@@ -108,8 +100,6 @@ public class Survey {
     public void setFormReference(boolean formReference) {
         isFormReference = formReference;
     }
-<<<<<<< Updated upstream
-=======
 
     public Integer getIdEtatSurvey() {
         return etatSurvey != null ? etatSurvey.getid() : null;
@@ -124,6 +114,5 @@ public class Survey {
         }
     }
 
->>>>>>> Stashed changes
 }
 

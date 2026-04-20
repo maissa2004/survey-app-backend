@@ -15,10 +15,7 @@ public class SurveyResponseDTO {
     private LocalDate dtAdd;
     private LocalDate dtUpdate;
     private boolean isFormReference;
-<<<<<<< Updated upstream
-=======
     private Integer idEtatSurvey;
->>>>>>> Stashed changes
 
     private List<SectionResponseDTO> sections;
 
@@ -104,10 +101,7 @@ public class SurveyResponseDTO {
         this.sections = sections;
     }
 
-<<<<<<< Updated upstream
     // getters & setters
-=======
     public Integer getIdEtatSurvey() { return idEtatSurvey; }
     public void setIdEtatSurvey(Integer idEtatSurvey) { this.idEtatSurvey = idEtatSurvey; }
->>>>>>> Stashed changes
 }

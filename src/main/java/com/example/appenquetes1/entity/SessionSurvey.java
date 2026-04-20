@@ -2,6 +2,7 @@
 package com.example.appenquetes1.entity;
 
 import jakarta.persistence.*;
+import jakarta.websocket.Session;
 
 import java.util.ArrayList;
 import java.util.List;
