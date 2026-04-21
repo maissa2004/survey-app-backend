@@ -1,4 +1,3 @@
-// com.example.appenquetes1.mapper.SessionMapper.java
 package com.example.appenquetes1.mapper;
 
 import com.example.appenquetes1.dto.session.SessionRequestDTO;
@@ -33,11 +32,12 @@ public class SessionMapper {
                 dto.setSurveyLibelle(first.getSurvey().getLibelle());
             }
 
-            // Liste complète des surveys
+            // 🔥 LISTE COMPLÈTE DES SURVEYS AVEC sessionSurveyId
             dto.setSurveys(session.getSessionSurveys().stream()
                     .filter(ss -> ss.getSurvey() != null)
                     .map(ss -> new SessionResponseDTO.SurveyInfo(
                             ss.getSurvey().getId(),
+                            ss.getId(),  // 🔥 sessionSurveyId (l'ID de la table de liaison)
                             ss.getSurvey().getCode(),
                             ss.getSurvey().getLibelle()
                     ))

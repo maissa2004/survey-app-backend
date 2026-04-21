@@ -3,7 +3,9 @@ package com.example.appenquetes1.controller;
 
 import com.example.appenquetes1.dto.session.SessionEnqueteurRequestDTO;
 import com.example.appenquetes1.dto.session.SessionEnqueteurResponseDTO;
+import com.example.appenquetes1.entity.SessionSurvey;
 import com.example.appenquetes1.entity.User;
+import com.example.appenquetes1.repository.SessionSurveyRepository;
 import com.example.appenquetes1.service.SessionEnqueteurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ public class SessionEnqueteurController {
 
     @Autowired
     private SessionEnqueteurService service;
+
+    @Autowired
+    private SessionSurveyRepository sessionSurveyRepository;
 
     // Récupérer les enquêteurs par session_survey
     @GetMapping("/session-survey/{sessionSurveyId}")
@@ -53,6 +58,23 @@ public class SessionEnqueteurController {
             System.err.println("Erreur: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // Récupérer les enquêteurs disponibles par ID de survey
+    @GetMapping("/survey/{surveyId}/available")
+    public ResponseEntity<List<User>> getAvailableEnqueteursBySurveyId(
+            @PathVariable Integer surveyId) {
+        // Chercher le(s) sessionSurvey qui correspondent à ce survey
+        List<SessionSurvey> sessionSurveys = sessionSurveyRepository.findAllBySurveyId(surveyId);
+
+        if (sessionSurveys.isEmpty()) {
+            throw new RuntimeException("Aucune session survey trouvée pour le survey ID: " + surveyId);
+        }
+
+        // Prendre le premier (ou traiter selon votre besoin)
+        SessionSurvey sessionSurvey = sessionSurveys.get(0);
+
+        return ResponseEntity.ok(service.getAvailableEnqueteursForSessionSurvey(sessionSurvey.getId()));
     }
 
     // Supprimer une affectation

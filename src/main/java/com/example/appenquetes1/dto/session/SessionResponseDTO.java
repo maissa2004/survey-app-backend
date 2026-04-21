@@ -22,9 +22,18 @@ public class SessionResponseDTO {
 
     public static class SurveyInfo {
         private Integer id;
+        private Integer sessionSurveyId;  // 🔥 AJOUTER CETTE LIGNE
         private String code;
         private String libelle;
 
+        public SurveyInfo(Integer id, Integer sessionSurveyId, String code, String libelle) {
+            this.id = id;
+            this.sessionSurveyId = sessionSurveyId;
+            this.code = code;
+            this.libelle = libelle;
+        }
+
+        // Constructeur avec 3 paramètres (pour compatibilité)
         public SurveyInfo(Integer id, String code, String libelle) {
             this.id = id;
             this.code = code;
@@ -34,6 +43,9 @@ public class SessionResponseDTO {
         public Integer getId() { return id; }
         public void setId(Integer id) { this.id = id; }
 
+        public Integer getSessionSurveyId() { return sessionSurveyId; }  // 🔥 AJOUTER
+        public void setSessionSurveyId(Integer sessionSurveyId) { this.sessionSurveyId = sessionSurveyId; }  // 🔥 AJOUTER
+
         public String getCode() { return code; }
         public void setCode(String code) { this.code = code; }
 
@@ -41,7 +53,7 @@ public class SessionResponseDTO {
         public void setLibelle(String libelle) { this.libelle = libelle; }
     }
 
-    // Getters et Setters
+    // Getters et Setters...
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

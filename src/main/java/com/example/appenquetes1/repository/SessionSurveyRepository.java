@@ -10,13 +10,16 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SessionSurveyRepository extends JpaRepository<SessionSurvey, Integer> {
 
     List<SessionSurvey> findByIdSession(Integer sessionId);
 
-    List<SessionSurvey> findByIdSurvey(Integer surveyId);
+    Optional<SessionSurvey> findBySurveyId(Integer surveyId);
+
+    List<SessionSurvey> findAllBySurveyId(Integer surveyId);
 
     @Modifying
     @Transactional
