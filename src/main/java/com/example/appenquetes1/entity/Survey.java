@@ -28,8 +28,6 @@ public class Survey {
     private boolean isValid;
     private boolean isFormReference;
 
-
-
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY)
     private Set<Section> sections = new HashSet<>();
 
@@ -47,13 +45,16 @@ public class Survey {
     public void setEtatSurvey(EtatSurvey etatSurvey) {
         this.etatSurvey = etatSurvey;
     }
+    @Transient
+    private Integer idEtatSurvey;
+
 
     public Survey() {}
 
     public Survey(Integer id, String code, String libelle, String libelleEn,
                   LocalDate dtAdd, LocalDate dtUpdate,
                   boolean isValid, boolean isFormReference,
-                  Set<Section> sections, Integer idUser) {
+                  Set<Section> sections) {
 
         this.id = id;
         this.code = code;
@@ -102,7 +103,18 @@ public class Survey {
         isFormReference = formReference;
     }
 
+    public Integer getIdEtatSurvey() {
+        return etatSurvey != null ? etatSurvey.getid() : null;
+    }
 
+    public void setIdEtatSurvey(Integer idEtatSurvey) {
+        this.idEtatSurvey = idEtatSurvey;
+        if (idEtatSurvey != null) {
+            EtatSurvey etat = new EtatSurvey();
+            etat.setid(idEtatSurvey);
+            this.etatSurvey = etat;
+        }
+    }
 
 }
 

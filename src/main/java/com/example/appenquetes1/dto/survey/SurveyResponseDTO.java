@@ -13,11 +13,8 @@ public class SurveyResponseDTO {
     private String libelleEn;
     private LocalDate dtAdd;
     private LocalDate dtUpdate;
-    private boolean isValid;
     private boolean isFormReference;
-    private Integer idUser;
-    private String username;
-
+    private Integer idEtatSurvey;
 
     private List<SectionResponseDTO> sections;
 
@@ -35,7 +32,6 @@ public class SurveyResponseDTO {
         this.libelleEn = libelleEn;
         this.dtAdd = dtAdd;
         this.dtUpdate = dtUpdate;
-        this.isValid = isValid;
         this.isFormReference = isFormReference;
         this.sections = sections;
     }
@@ -88,14 +84,6 @@ public class SurveyResponseDTO {
         this.dtUpdate = dtUpdate;
     }
 
-    public boolean isValid() {
-        return isValid;
-    }
-
-    public void setValid(boolean valid) {
-        isValid = valid;
-    }
-
     public boolean isFormReference() {
         return isFormReference;
     }
@@ -112,9 +100,7 @@ public class SurveyResponseDTO {
         this.sections = sections;
     }
 
-    public Integer getIdUser() { return idUser; }
-    public void setIdUser(Integer idUser) { this.idUser = idUser; }
-
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    // getters & setters
+    public Integer getIdEtatSurvey() { return idEtatSurvey; }
+    public void setIdEtatSurvey(Integer idEtatSurvey) { this.idEtatSurvey = idEtatSurvey; }
 }
