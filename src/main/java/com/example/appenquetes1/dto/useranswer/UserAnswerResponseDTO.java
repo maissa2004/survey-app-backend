@@ -17,6 +17,7 @@ public class UserAnswerResponseDTO {
     private LocalDateTime dtUpdate;
     private String codeQuestion;
     private Integer idSurvey;
+    private Integer submissionId;
 
     // Données liées
     private String username;
@@ -76,4 +77,7 @@ public class UserAnswerResponseDTO {
 
     public String getSurveyLibelle() { return surveyLibelle; }
     public void setSurveyLibelle(String surveyLibelle) { this.surveyLibelle = surveyLibelle; }
+
+    public void setSubmissionId(Integer submissionId) { this.submissionId = submissionId; }
+
 }

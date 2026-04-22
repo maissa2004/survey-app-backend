@@ -4,6 +4,8 @@ package com.example.appenquetes1.controller;
 import com.example.appenquetes1.dto.useranswer.UserAnswerRequestDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswerResponseDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswersSurvey;
+import com.example.appenquetes1.entity.SurveySubmission;
+import com.example.appenquetes1.repository.SurveySubmissionRepository;
 import com.example.appenquetes1.service.AnswersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,6 +22,10 @@ public class AnswersController {
 
     @Autowired
     private AnswersService answersService;
+    @Autowired
+    private SurveySubmissionRepository SurveySubmissionRepository;
+    @Autowired
+    private SurveySubmissionRepository surveySubmissionRepository;
 
     @PostMapping
     public ResponseEntity<UserAnswerResponseDTO> create(@RequestBody UserAnswerRequestDTO answer) {
@@ -29,29 +36,34 @@ public class AnswersController {
         Integer userIdToken = (Integer) request.getAttribute("userId");
         List<UserAnswerRequestDTO> ListAnswers = answers.getResponses();
 
-            if (userIdToken != null) {
-                for (UserAnswerRequestDTO answer : ListAnswers) {
-                    answer.setIdUser(userIdToken);
-                }
-            } else {
-                Integer userIdFromAnswers = answers.getIdUser();
-                if (userIdFromAnswers != null) {
-                    for (UserAnswerRequestDTO answerA : ListAnswers) {
-                        if (answerA.getIdUser() == null) {
-                            answerA.setIdUser(userIdFromAnswers);
-                        }
-                    }
-                }
-            }
 
+        Integer finalUserId = userIdToken;
+        if (finalUserId == null && answers.getIdUser() != null) {
+            finalUserId = answers.getIdUser();
+        }
+        if (finalUserId == null) {
+            return ResponseEntity.badRequest().body("Utilisateur non identifié");
+        }
             Integer surveyId = answers.getIdSurvey();
-            if (surveyId != null) {
-                for (UserAnswerRequestDTO answerA : ListAnswers) {
-                    if (answerA.getIdSurvey() == null) {
-                        answerA.setIdSurvey(surveyId);
-                    }
-                }
-            }
+        if (surveyId == null && !ListAnswers.isEmpty()) {
+            surveyId = ListAnswers.get(0).getIdSurvey();
+        }
+
+
+        SurveySubmission submission = new SurveySubmission();
+        submission.setUserId(finalUserId);
+        submission.setSurveyId(surveyId);
+        submission.setSubmissionDate(LocalDateTime.now());
+        submission.setStatus("EN ATTENTE");
+        SurveySubmission savedSubmission = surveySubmissionRepository.save(submission);
+
+        //lier reponse a id submission (ensemble de reponse)
+        for (UserAnswerRequestDTO answer : ListAnswers) {
+            answer.setSubmissionId(savedSubmission.getId());
+            if (answer.getIdUser() == null) answer.setIdUser(finalUserId);
+            if (answer.getIdSurvey() == null) answer.setIdSurvey(surveyId);
+        }
+
         System.out.println("Received answers: " + ListAnswers);
         answersService.submitSurveyAnswers(ListAnswers);
 

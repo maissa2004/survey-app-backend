@@ -52,6 +52,8 @@ public class AnswersMapper {
                             .toString()
             );
         }
+        dto.setSubmissionId(answer.getSubmissionId());
+
 
         return dto;
     }
@@ -78,7 +80,7 @@ public class AnswersMapper {
         );}
         answer.setCodeQuestion(dto.getCodeQuestion());
         answer.setIdSurvey(dto.getIdSurvey());
-
+        answer.setSubmissionId(dto.getSubmissionId());
         return answer;
     }
 }

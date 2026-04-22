@@ -60,6 +60,13 @@ public class Answers {
     @JoinColumn(name = "id_survey", insertable = false, updatable = false)
     private Survey survey;
 
+    @Column(name = "submission_id")
+    private Integer submissionId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "submission_id", insertable = false, updatable = false)
+    private SurveySubmission submission;
+
     @PrePersist
     protected void onCreate() {
         dtUpdate = LocalDateTime.now();
@@ -125,4 +132,10 @@ public class Answers {
 
     public Survey getSurvey() { return survey; }
     public void setSurvey(Survey survey) { this.survey = survey; }
+
+    public Integer getSubmissionId() { return submissionId; }
+    public void setSubmissionId(Integer submissionId) { this.submissionId = submissionId; }
+
+    public SurveySubmission getSubmission() { return submission; }
+    public void setSubmission(SurveySubmission submission) { this.submission = submission; }
 }

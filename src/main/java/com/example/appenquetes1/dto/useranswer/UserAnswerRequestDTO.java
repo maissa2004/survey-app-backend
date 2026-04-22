@@ -15,6 +15,7 @@ public class UserAnswerRequestDTO {
     private List<Integer> idNmAnswer;
     private String codeQuestion;
     private Integer idSurvey;
+    private Integer submissionId;
 
     // Getters et Setters
     public Integer getIdSectionQuest() { return idSectionQuest; }
@@ -49,4 +50,8 @@ public class UserAnswerRequestDTO {
 
     public Integer getIdSurvey() { return idSurvey; }
     public void setIdSurvey(Integer idSurvey) { this.idSurvey = idSurvey; }
+
+    public Integer getSubmissionId() { return submissionId; }
+    public void setSubmissionId(Integer submissionId) { this.submissionId = submissionId; }
+
 }
