@@ -1,11 +1,13 @@
 package com.example.appenquetes1.controller;
 
+import com.example.appenquetes1.dto.survey.AssignedSurveyDTO;
 import com.example.appenquetes1.dto.survey.SurveyCreateDTO;
 import com.example.appenquetes1.dto.survey.SurveyResponseDTO;
 import com.example.appenquetes1.entity.EtatSurvey;
 import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.mapper.SurveyMapper;
 import com.example.appenquetes1.service.SurveyService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +111,15 @@ public class SurveyController {
         Survey survey = service.getFullSurvey(id);
 
         return SurveyMapper.toDTO(survey);
+    }
+
+    @GetMapping("/assigned")
+    public ResponseEntity<List<AssignedSurveyDTO>> getAssignedSurveys(HttpServletRequest request) {
+        Integer userId = (Integer) request.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(service.getAssignedSurveysForUser(userId));
     }
 
 
