@@ -19,6 +19,12 @@ public class SectionController {
 
     @PostMapping
     public Section create(@RequestBody Section section) {
+        System.out.println("=== RECEIVED SECTION ===");
+        System.out.println("code: " + section.getCode());
+        System.out.println("title: " + section.getTitle());
+        System.out.println("conditionnel: " + section.isConditionnel());
+        System.out.println("ordre: " + section.getOrdre());
+        System.out.println("idSurvey: " + section.getSurvey());
         return service.save(section);
     }
 
