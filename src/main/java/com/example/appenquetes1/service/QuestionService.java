@@ -16,6 +16,13 @@ public class QuestionService {
     @Autowired
     private QuestionRepository repository;
 
+    @Autowired
+    private QuestionAnswersService questionAnswersService;
+
+    @Autowired
+    private SectionQuestionService sectionQuestionService;
+
+
     public Question save(Question question) {
         System.out.println("=== SAVING QUESTION ===");
         System.out.println("id_nm_type_quest: " + question.getIdNmTypeQuest());
@@ -31,8 +38,20 @@ public class QuestionService {
         return repository.findById(id).orElse(null);
     }
 
+    @Transactional
     public void delete(Integer id) {
+        System.out.println("🔍 Suppression de la question ID: " + id);
+
+        // 1. Supprimer les liens section_question (table de liaison)
+        sectionQuestionService.deleteByQuestionId(id);
+
+        // 2. Supprimer les réponses associées (question_answers et nm_answers)
+        questionAnswersService.deleteByQuestionId(id);
+
+        // 3. Enfin supprimer la question
         repository.deleteById(id);
+
+        System.out.println("✅ Question supprimée avec succès");
     }
 
     public List<Question> findByTitleFr(String titleFr) {

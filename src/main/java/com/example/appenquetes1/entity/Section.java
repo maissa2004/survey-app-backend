@@ -52,7 +52,7 @@ public class Section {
     private Survey survey;
 
 
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SectionQuestion> sectionQuestions = new HashSet<>();
 
     @ManyToOne
