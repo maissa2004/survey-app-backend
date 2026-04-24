@@ -18,7 +18,6 @@ public interface SessionSurveyRepository extends JpaRepository<SessionSurvey, In
     List<SessionSurvey> findByIdSession(Integer sessionId);
 
     Optional<SessionSurvey> findBySurveyId(Integer surveyId);
-
     List<SessionSurvey> findAllBySurveyId(Integer surveyId);
 
     @Modifying

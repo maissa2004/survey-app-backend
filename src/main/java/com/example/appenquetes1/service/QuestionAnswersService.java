@@ -53,22 +53,20 @@ public class QuestionAnswersService {
     public void deleteByQuestionId(Integer questionId) {
         System.out.println("🔍 DELETE BY QUESTION ID: " + questionId);
 
-        // 1. Récupérer les QuestionAnswers
-        List<QuestionAnswers> answers = repository.findByQuestionId(questionId);
-        System.out.println("🔍 Nombre de QuestionAnswers trouvées: " + answers.size());
+        // 1. Récupérer les IDs des NmAnswers associées (sans charger les entités complètes)
+        List<Integer> nmAnswerIds = repository.findNmAnswerIdsByQuestionId(questionId);
+        System.out.println("🔍 Nombre de NmAnswers associées: " + nmAnswerIds.size());
 
-        // 2. Supprimer les NmAnswers associées
-        for (QuestionAnswers answer : answers) {
-            if (answer.getNmAnswers() != null) {
-                Integer nmId = answer.getNmAnswers().getId();
-                System.out.println("🔍 Suppression NmAnswers ID: " + nmId);
-                nmAnswersRepository.deleteById(nmId);
-            }
-        }
-
-        // 3. Supprimer les QuestionAnswers
+        // 2. Supprimer d'abord les QuestionAnswers
         int deleted = repository.deleteByQuestionId(questionId);
         System.out.println("✅ " + deleted + " QuestionAnswers supprimées");
+
+        // 3. MAINTENANT supprimer les NmAnswers (après que les QuestionAnswers sont parties)
+        for (Integer nmId : nmAnswerIds) {
+            System.out.println("🔍 Suppression NmAnswers ID: " + nmId);
+            nmAnswersRepository.deleteById(nmId);
+        }
+        System.out.println("✅ " + nmAnswerIds.size() + " NmAnswers supprimées");
     }
 }
 

@@ -15,6 +15,7 @@ public class SectionCreateDTO {
     private int ordre;
     private Integer idReferencedForm;
     private LocalDate dtUpdate;
+    private Integer idSurvey;
 
     private List<QuestionCreateDTO> questions;
 
@@ -101,7 +102,17 @@ public class SectionCreateDTO {
         return questions;
     }
 
+    public Integer getIdSurvey() {
+        return idSurvey;
+    }
+
+    public void setIdSurvey(Integer idSurvey) {
+        this.idSurvey = idSurvey;
+    }
+
     public void setQuestions(List<QuestionCreateDTO> sectionQuestions) {
         this.questions = questions;
+
+
     }
 }
