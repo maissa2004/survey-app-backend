@@ -1,21 +1,39 @@
 package com.example.appenquetes1.service;
 
-import com.example.appenquetes1.entity.EtatSurvey;
-import com.example.appenquetes1.entity.Question;
-import com.example.appenquetes1.entity.Section;
-import com.example.appenquetes1.entity.Survey;
-import com.example.appenquetes1.repository.SurveyRepository;
+import com.example.appenquetes1.entity.*;
+import com.example.appenquetes1.repository.*;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class SurveyService {
 
     @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
     private SurveyRepository repository;
+
+    @Autowired
+    private SectionRepository sectionRepository;
+
+    @Autowired
+    private SectionQuestionRepository sectionQuestionRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionAnswersRepository questionAnswersRepository;
+
+    @Autowired
+    private NmAnswersRepository nmAnswersRepository;
 
     public Survey save(Survey s) {
         return repository.save(s);
@@ -29,26 +47,72 @@ public class SurveyService {
         return repository.findById(id).orElse(null);
     }
 
+
+    @Transactional
     public void delete(Integer id) {
-        repository.deleteById(id);
+        Survey survey = findById(id);
+        if (survey == null) {
+            throw new RuntimeException("Survey non trouvé avec ID: " + id);
+        }
+
+        try {
+            // 1. Désactiver les contraintes de clés étrangères
+            entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+
+            // 2. Supprimer les nm_answers
+            entityManager.createNativeQuery(
+                    "DELETE FROM nm_answers WHERE id IN (" +
+                            "SELECT id_nm_answers FROM question_answers WHERE id_question IN (" +
+                            "SELECT id_question FROM section_question WHERE id_section IN (" +
+                            "SELECT id FROM section WHERE id_survey = ?)))"
+            ).setParameter(1, id).executeUpdate();
+
+            // 3. Supprimer les question_answers
+            entityManager.createNativeQuery(
+                    "DELETE FROM question_answers WHERE id_question IN (" +
+                            "SELECT id_question FROM section_question WHERE id_section IN (" +
+                            "SELECT id FROM section WHERE id_survey = ?))"
+            ).setParameter(1, id).executeUpdate();
+
+            // 4. Supprimer les questions
+            entityManager.createNativeQuery(
+                    "DELETE FROM question WHERE id IN (" +
+                            "SELECT id_question FROM section_question WHERE id_section IN (" +
+                            "SELECT id FROM section WHERE id_survey = ?))"
+            ).setParameter(1, id).executeUpdate();
+
+            // 5. Supprimer les section_question
+            entityManager.createNativeQuery(
+                    "DELETE FROM section_question WHERE id_section IN (" +
+                            "SELECT id FROM section WHERE id_survey = ?)"
+            ).setParameter(1, id).executeUpdate();
+
+            // 6. Supprimer les sections
+            entityManager.createNativeQuery("DELETE FROM section WHERE id_survey = ?")
+                    .setParameter(1, id).executeUpdate();
+
+            // 7. Supprimer le survey
+            entityManager.createNativeQuery("DELETE FROM survey WHERE id = ?")
+                    .setParameter(1, id).executeUpdate();
+
+            // 8. Réactiver les contraintes
+            entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+
+            System.out.println("✅ Survey ID " + id + " supprimé avec succès");
+
+        } catch (Exception e) {
+            entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+            throw new RuntimeException("Erreur lors de la suppression: " + e.getMessage());
+        }
     }
 
-    /*public List<Section> findSectionsBySurveyId(Integer surveyId) {
-
-        Survey survey = findById(surveyId);
-
-        return survey.getSections();
-    }*/
-
     public Survey getSurveyWithSections(Integer surveyId) {
-
         return repository.findSurveyWithSections(surveyId)
                 .orElseThrow(() -> new RuntimeException("Survey introuvable"));
     }
 
     @Transactional
     public Survey getFullSurvey(Integer id) {
-        // 🔥 CORRECTION : Définir la variable survey
         Survey survey = repository.findFullSurvey(id)
                 .orElseThrow(() -> new RuntimeException("Survey introuvable"));
 
@@ -56,14 +120,13 @@ public class SurveyService {
         survey.getSections().forEach(section -> {
             section.getSectionQuestions().forEach(sq -> {
                 Question q = sq.getQuestion();
-                // Forcer l'initialisation des réponses
-                q.getAnswers().size();  // Force le chargement
-                System.out.println("Question: " + q.getCode() + ", Answers: " + q.getAnswers().size());
+                if (q != null) {
+                    q.getAnswers().size();
+                    System.out.println("Question: " + q.getCode() + ", Answers: " + q.getAnswers().size());
+                }
             });
         });
 
         return survey;
     }
-
 }
-
