@@ -14,6 +14,7 @@ public class SectionResponseDTO {
     private boolean isConditionnel;
     private int ordre;
     private Integer idSurvey;
+    private Integer parentSectionId;
     private LocalDate dtUpdate;
 
     private List<QuestionResponseDTO> questions;
@@ -92,5 +93,5 @@ public class SectionResponseDTO {
         this.questions = questions;
     }
 
-    // getters & setters
-}
+    public Integer getParentSectionId() { return parentSectionId; }
+    public void setParentSectionId(Integer parentSectionId) { this.parentSectionId = parentSectionId; }}

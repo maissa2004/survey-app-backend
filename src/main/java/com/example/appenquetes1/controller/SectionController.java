@@ -5,6 +5,7 @@ import com.example.appenquetes1.entity.Section;
 import com.example.appenquetes1.mapper.SectionMapper;
 import com.example.appenquetes1.service.SectionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +35,13 @@ public class SectionController {
 
     // UPDATE
     @PutMapping("/{id}")
-    public Section update(@PathVariable Integer id,
-                          @RequestBody Section section) {
-        section.setId(id);
-        return service.save(section);
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                    @RequestBody Section section) {
+        Section updated = service.updateSection(id, section);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 
     // DELETE

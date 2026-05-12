@@ -21,5 +21,8 @@ public interface SectionRepository extends JpaRepository<Section, Integer> {
     WHERE s.id = :id
 """)
     Optional<Section> findFullSection(@Param("id") Integer id);
+
+    @Query("SELECT MAX(s.ordre) FROM Section s WHERE s.survey.id = :surveyId")
+    Integer findMaxOrdreBySurvey(@Param("surveyId") Integer surveyId);
 }
 

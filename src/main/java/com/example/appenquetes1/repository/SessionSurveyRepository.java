@@ -21,6 +21,10 @@ public interface SessionSurveyRepository extends JpaRepository<SessionSurvey, In
 
     List<SessionSurvey> findAllBySurveyId(Integer surveyId);
 
+    @Query("SELECT ss FROM SessionSurvey ss WHERE ss.idSession = :sessionId AND ss.idSurvey = :surveyId")
+    Optional<SessionSurvey> findBySessionIdAndSurveyId(@Param("sessionId") Integer sessionId,
+                                                       @Param("surveyId") Integer surveyId);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM SessionSurvey ss WHERE ss.idSession = :sessionId")
