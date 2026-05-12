@@ -11,42 +11,31 @@ public class AnswerMapper {
     public static AnswerResponseDTO toDTO(QuestionAnswers ans) {
         if (ans == null) return null;
 
-        System.out.println("Mapping Answer ID: " + ans.getId() +
-                ", Code: " + ans.getNmAnswers().getCode() +
-                ", hasCondiQuestions: " + (ans.getCondiQuestions() != null ? ans.getCondiQuestions().size() : 0));
-
         AnswerResponseDTO dto = new AnswerResponseDTO();
         dto.setId(ans.getId());
+        dto.setDtUpdate(ans.getDtUpdate());
+
+        // Sécurité pour nmAnswers null
         if (ans.getNmAnswers() != null) {
             dto.setCode(ans.getNmAnswers().getCode());
             dto.setLibelle(ans.getNmAnswers().getLibelle());
             dto.setLibelleEn(ans.getNmAnswers().getLibelleEn());
             dto.setReference(ans.getNmAnswers().getReference());
-        } else {
-            dto.setCode(null);
-            dto.setLibelle(null);
-            dto.setLibelleEn(null);
-            dto.setReference(null);
         }
 
-        dto.setDtUpdate(ans.getDtUpdate());
-
-        // Mapper les Questions Conditionnelles
-        // Dans AnswerMapper.java, remplacez le mapping des condiQuestions:
+        // Questions conditionnelles
         if (ans.getCondiQuestions() != null && !ans.getCondiQuestions().isEmpty()) {
-            System.out.println("  Mapping " + ans.getCondiQuestions().size() + " conditional questions");
             dto.setCondiQuestion(
                     ans.getCondiQuestions().stream()
-                            .map(q -> QuestionMapper.toDTOFromQuestion(q)) // Cette méthode doit maintenant inclure les answers
+                            .map(QuestionMapper::toDTOFromQuestion)
                             .collect(Collectors.toList())
             );
         } else {
             dto.setCondiQuestion(new ArrayList<>());
         }
 
-        // Mapper les Sections Conditionnelles
+        // Sections conditionnelles
         if (ans.getCondiSections() != null && !ans.getCondiSections().isEmpty()) {
-            System.out.println("  Mapping " + ans.getCondiSections().size() + " conditional sections");
             dto.setCondiSections(
                     ans.getCondiSections().stream()
                             .map(SectionMapper::toDTO)

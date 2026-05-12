@@ -19,6 +19,7 @@ public class SectionMapper {
         dto.setTitleEn(section.getTitleEn());
         dto.setConditionnel(section.isConditionnel());
         dto.setOrdre(section.getOrdre());
+        dto.setParentSectionId(section.getParentSectionId());
 
         if (section.getSurvey() != null) {
             dto.setIdSurvey(section.getSurvey().getId());

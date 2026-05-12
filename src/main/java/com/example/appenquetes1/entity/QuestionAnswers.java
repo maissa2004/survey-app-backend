@@ -14,7 +14,9 @@ public class QuestionAnswers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Boolean isConditionnel;
+
+    @Column(nullable = false)
+    private Boolean isConditionnel = false;
     private LocalDate dtUpdate;
 
     @ManyToOne
@@ -22,8 +24,8 @@ public class QuestionAnswers {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)  // ← CHANGEMENT ICI
     private Question question;
 
-    @ManyToOne
-    @JoinColumn(name = "id_nm_answers")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_nm_answers", nullable = false)
     private NmAnswers nmAnswers;
 
     @ManyToOne

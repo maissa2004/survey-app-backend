@@ -28,6 +28,7 @@ public class SessionEnqueteur {
     @JoinColumn(name = "id_user", insertable = false, updatable = false)
     private User user;
 
+
     @PrePersist
     protected void onCreate() {
         dateAffectation = LocalDateTime.now();

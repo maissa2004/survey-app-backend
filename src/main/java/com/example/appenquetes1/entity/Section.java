@@ -1,6 +1,7 @@
 package com.example.appenquetes1.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -51,6 +52,9 @@ public class Section {
     @JsonIgnore
     private Survey survey;
 
+    @JsonProperty("parentSectionId")
+    @Column(name = "parent_section_id")
+    private Integer parentSectionId;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SectionQuestion> sectionQuestions = new HashSet<>();
@@ -157,5 +161,11 @@ public class Section {
     public void setParentAnswer(QuestionAnswers parentAnswer) {
         this.parentAnswer = parentAnswer;
     }
+
+    @JsonProperty("parentSectionId")
+    public Integer getParentSectionId() {
+        return parentSectionId;
+    }
+    public void setParentSectionId(Integer parentSectionId) { this.parentSectionId = parentSectionId; }
 }
 

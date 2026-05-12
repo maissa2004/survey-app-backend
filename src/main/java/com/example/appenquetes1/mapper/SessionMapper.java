@@ -32,15 +32,28 @@ public class SessionMapper {
                 dto.setSurveyLibelle(first.getSurvey().getLibelle());
             }
 
-            // 🔥 LISTE COMPLÈTE DES SURVEYS AVEC sessionSurveyId
+            // 🔥 LISTE COMPLÈTE DES SURVEYS AVEC LEURS ENQUÊTEURS
             dto.setSurveys(session.getSessionSurveys().stream()
                     .filter(ss -> ss.getSurvey() != null)
-                    .map(ss -> new SessionResponseDTO.SurveyInfo(
-                            ss.getSurvey().getId(),
-                            ss.getId(),  // 🔥 sessionSurveyId (l'ID de la table de liaison)
-                            ss.getSurvey().getCode(),
-                            ss.getSurvey().getLibelle()
-                    ))
+                    .map(ss -> {
+                        SessionResponseDTO.SurveyInfo surveyInfo = new SessionResponseDTO.SurveyInfo(
+                                ss.getSurvey().getId(),
+                                ss.getId(),  // sessionSurveyId
+                                ss.getSurvey().getCode(),
+                                ss.getSurvey().getLibelle()
+                        );
+
+                        // 🔥 AJOUTER LES ENQUÊTEURS POUR CE SESSION_SURVEY
+                        if (ss.getSessionEnqueteurs() != null && !ss.getSessionEnqueteurs().isEmpty()) {
+                            surveyInfo.setEnqueteurs(
+                                    ss.getSessionEnqueteurs().stream()
+                                            .map(SessionEnqueteurMapper::toDTO)
+                                            .collect(Collectors.toList())
+                            );
+                        }
+
+                        return surveyInfo;
+                    })
                     .collect(Collectors.toList()));
         }
 

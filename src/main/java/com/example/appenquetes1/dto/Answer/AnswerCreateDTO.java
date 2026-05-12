@@ -1,6 +1,7 @@
 package com.example.appenquetes1.dto.Answer;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class AnswerCreateDTO {
     private Integer id;
@@ -9,7 +10,9 @@ public class AnswerCreateDTO {
     private String libelleEn;
     private String reference;
     private LocalDate dtUpdate;
-
+    private Boolean isConditionnel;
+    private List<Integer> condiQuestionIds;
+    private List<Integer> condiSectionIds;
     public AnswerCreateDTO() {
     }
 
@@ -68,5 +71,29 @@ public class AnswerCreateDTO {
 
     public void setDtUpdate(LocalDate dtUpdate) {
         this.dtUpdate = dtUpdate;
+    }
+
+    public Boolean getIsConditionnel() {
+        return isConditionnel;
+    }
+
+    public void setIsConditionnel(Boolean conditionnel) {
+        isConditionnel = conditionnel;
+    }
+
+    public List<Integer> getCondiQuestionIds() {
+        return condiQuestionIds;
+    }
+
+    public void setCondiQuestionIds(List<Integer> condiQuestionIds) {
+        this.condiQuestionIds = condiQuestionIds;
+    }
+
+    public List<Integer> getCondiSectionIds() {
+        return condiSectionIds;
+    }
+
+    public void setCondiSectionIds(List<Integer> condiSectionIds) {
+        this.condiSectionIds = condiSectionIds;
     }
 }
