@@ -19,7 +19,7 @@ public class EtatSurvey {
     public EtatSurvey() {
     }
 
-    public EtatSurvey(int id, boolean etat, LocalDateTime dtUpdate) {
+    public EtatSurvey(Integer id, boolean etat, LocalDateTime dtUpdate) {
         this.id = id;
         this.etat = etat;
         this.dtUpdate = dtUpdate;

@@ -62,4 +62,7 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     // Récupérer les sessions par survey (via la table de liaison)
     @Query("SELECT DISTINCT s FROM Session s JOIN s.sessionSurveys ss WHERE ss.idSurvey = :surveyId")
     List<Session> findSessionsBySurveyId(@Param("surveyId") Integer surveyId);
+
+    long countByDtCreateBefore(LocalDateTime date);
+
 }

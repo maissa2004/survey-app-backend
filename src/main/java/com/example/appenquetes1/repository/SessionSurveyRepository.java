@@ -25,5 +25,7 @@ public interface SessionSurveyRepository extends JpaRepository<SessionSurvey, In
     @Query("DELETE FROM SessionSurvey ss WHERE ss.idSession = :sessionId")
     void deleteBySessionId(@Param("sessionId") Integer sessionId);
 
+    @Query(value = "SELECT sess.intitule, COUNT(ss.id_survey) FROM session_survey ss INNER JOIN session sess ON ss.id_session= sess.id GROUP BY sess.intitule", nativeQuery = true)
+    List<Object[]> countSurveysPerSession();
     boolean existsByIdSessionAndIdSurvey(Integer sessionId, Integer surveyId);
 }

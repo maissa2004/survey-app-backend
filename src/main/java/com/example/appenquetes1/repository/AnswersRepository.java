@@ -1,6 +1,7 @@
 // com.example.appenquetes1.repository.AnswersRepository.java
 package com.example.appenquetes1.repository;
 
+import com.example.appenquetes1.dto.admin.AnswerDetailDTO;
 import com.example.appenquetes1.entity.Answers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -40,4 +41,8 @@ public interface AnswersRepository extends JpaRepository<Answers, Integer> {
                                                  @Param("sectionQuestId") Integer sectionQuestId);
 
     long countByIdUserAndIdSurvey(Integer userId, Integer surveyId);
+
+
+    List<Answers> findBySubmissionId(Integer id);
+
 }

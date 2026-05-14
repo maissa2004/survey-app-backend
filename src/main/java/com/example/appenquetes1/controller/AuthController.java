@@ -38,4 +38,5 @@ public class AuthController {
         error.put("error", response.getMessage());
         return ResponseEntity.status(409).body(error);
     }
+
 }

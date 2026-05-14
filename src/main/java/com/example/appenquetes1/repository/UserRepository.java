@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String username);
 
+    long countByRole(User.Role role);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findByPhone(String phone);
@@ -35,6 +37,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.username = :login OR u.email = :login OR u.phone = :login")
     Optional<User> findByUsernameEmailOrPhone(@Param("login") String login);
 
+    long countByCreatedAtBefore(LocalDateTime date);
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.lastLogin = :lastLogin WHERE u.id = :userId")

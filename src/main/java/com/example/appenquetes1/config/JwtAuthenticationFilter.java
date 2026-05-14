@@ -33,13 +33,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         System.out.println("Authorization header: " + authHeader);
 
+        String path = request.getRequestURI();
+        boolean isPublic = path.startsWith("/api/auth/") || path.startsWith("/api/survey/") || path.equals("/api/answers/submit");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
                 String username = jwtUtil.extractUsername(token);
                 String role = jwtUtil.extractRole(token);
                 Integer userId = jwtUtil.extractUserId(token);
-                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+
+                String authority = role.toUpperCase();
+                List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(authority));
 
                 UserDetails userDetails = new User(username, "", authorities);
                 UsernamePasswordAuthenticationToken authentication =
@@ -49,12 +54,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //stocker userId pour save
                 request.setAttribute("userId", userId);
                 System.out.println("Token valide");
+                filterChain.doFilter(request, response);
+                return;
 
             } else {
-                System.out.println("Token invalide");
+                System.out.println("Token invalide :" + token);
+                if (!isPublic) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token invalide ou expiré");
+                    return;
+                }
             }
+        } else if (!isPublic) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentification requise");
+            return;
 
         }
+        System.out.println("PUBLIC URL : " + path);
         filterChain.doFilter(request, response);
 
 

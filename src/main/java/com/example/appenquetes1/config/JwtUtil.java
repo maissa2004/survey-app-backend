@@ -8,6 +8,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+
 import java.security.Key;
 import java.util.Date;
 
@@ -60,7 +62,10 @@ public class JwtUtil {
             extractAllClaims(token);
             return true;
         } catch (Exception e) {
+            System.err.println("Validation JWT échouée : " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
+
 }
