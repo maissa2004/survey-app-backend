@@ -11,8 +11,9 @@ import java.util.List;
 
 public interface QuestionAnswersRepository extends JpaRepository<QuestionAnswers, Integer> {
     List<QuestionAnswers> findByIsConditionnel(Boolean conditionnel);
-    List<QuestionAnswers> findByQuestionId(Integer questionId);
-    @Modifying
+    // Dans QuestionAnswersRepository.java
+    @Query("SELECT qa FROM QuestionAnswers qa WHERE qa.question.id = :questionId")
+    List<QuestionAnswers> findByQuestionId(@Param("questionId") Integer questionId);    @Modifying
     @Transactional
     int deleteByQuestionId(Integer questionId);
 

@@ -1,6 +1,7 @@
 package com.example.appenquetes1.dto.session;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SessionResponseDTO {
@@ -11,12 +12,10 @@ public class SessionResponseDTO {
     private String status;
     private LocalDateTime dtCreate;
     private LocalDateTime dtUpdate;
-
     // Pour l'affichage (premier survey)
     private Integer idSurvey;
     private String surveyCode;
     private String surveyLibelle;
-
     // Liste complète des surveys
     private List<SurveyInfo> surveys;
 
@@ -25,12 +24,17 @@ public class SessionResponseDTO {
         private Integer sessionSurveyId;  // 🔥 AJOUTER CETTE LIGNE
         private String code;
         private String libelle;
+        private List<SessionEnqueteurResponseDTO> enqueteurs;
+
+
 
         public SurveyInfo(Integer id, Integer sessionSurveyId, String code, String libelle) {
             this.id = id;
             this.sessionSurveyId = sessionSurveyId;
             this.code = code;
             this.libelle = libelle;
+            this.enqueteurs = new ArrayList<>();
+
         }
 
         // Constructeur avec 3 paramètres (pour compatibilité)
@@ -51,6 +55,11 @@ public class SessionResponseDTO {
 
         public String getLibelle() { return libelle; }
         public void setLibelle(String libelle) { this.libelle = libelle; }
+
+        public void setEnqueteurs(List<SessionEnqueteurResponseDTO> enqueteurs) {
+            this.enqueteurs = enqueteurs != null ? enqueteurs : new ArrayList<>();
+        }
+
     }
 
     // Getters et Setters...
@@ -86,4 +95,5 @@ public class SessionResponseDTO {
 
     public List<SurveyInfo> getSurveys() { return surveys; }
     public void setSurveys(List<SurveyInfo> surveys) { this.surveys = surveys; }
+
 }

@@ -3,6 +3,9 @@ package com.example.appenquetes1.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "session_survey")
 public class SessionSurvey {
@@ -24,6 +27,10 @@ public class SessionSurvey {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_survey", insertable = false, updatable = false)
     private Survey survey;
+
+    @OneToMany(mappedBy = "sessionSurvey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SessionEnqueteur> sessionEnqueteurs = new ArrayList<>();
+
 
     // Constructeurs
     public SessionSurvey() {}
@@ -47,5 +54,8 @@ public class SessionSurvey {
     public void setSession(Session session) { this.session = session; }
 
     public Survey getSurvey() { return survey; }
-    public void setSurvey(Survey survey) { this.survey = survey; }
+    public void setSurvey(Survey survey) { this.survey = survey;}
+
+    public List<SessionEnqueteur> getSessionEnqueteurs() { return sessionEnqueteurs; }
+    public void setSessionEnqueteurs(List<SessionEnqueteur> sessionEnqueteurs) { this.sessionEnqueteurs = sessionEnqueteurs; }
 }

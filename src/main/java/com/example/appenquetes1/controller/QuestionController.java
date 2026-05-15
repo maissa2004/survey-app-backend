@@ -1,11 +1,15 @@
 package com.example.appenquetes1.controller;
 
+import com.example.appenquetes1.dto.question.QuestionUpdateDTO;
+import com.example.appenquetes1.entity.NmTypeQuest;
 import com.example.appenquetes1.entity.Question;
 import com.example.appenquetes1.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/question")
@@ -37,18 +41,48 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
-    public Question update(@PathVariable Integer id,
-                           @RequestBody Question question) {
+    public ResponseEntity<?> update(@PathVariable Integer id,
+                                    @RequestBody Map<String, Object> payload) {
         System.out.println("=== UPDATE QUESTION ===");
         System.out.println("ID: " + id);
-        question.setId(id);
-        return service.updateQuestion(id, question);  // ← Utiliser updateQuestion au lieu de save
+        System.out.println("Payload reçu: " + payload);
+
+        // 🔥 Lire la valeur avec la clé snake_case
+        Integer idNmTypeQuest = null;
+        if (payload.containsKey("id_nm_type_quest")) {
+            idNmTypeQuest = (Integer) payload.get("id_nm_type_quest");
+        } else if (payload.containsKey("idNmTypeQuest")) {
+            idNmTypeQuest = (Integer) payload.get("idNmTypeQuest");
+        }
+
+        String code = (String) payload.get("code");
+        String titleFr = (String) payload.get("titleFr");
+        String titleEn = (String) payload.get("titleEn");
+
+        System.out.println("Code reçu: " + code);
+        System.out.println("TitleFr reçu: " + titleFr);
+        System.out.println("idNmTypeQuest reçu: " + idNmTypeQuest);
+
+        Question questionToUpdate = new Question();
+        questionToUpdate.setCode(code);
+        questionToUpdate.setTitleFr(titleFr);
+        questionToUpdate.setTitleEn(titleEn != null ? titleEn : "");
+
+        if (idNmTypeQuest != null) {
+            NmTypeQuest type = new NmTypeQuest();
+            type.setId(idNmTypeQuest);
+            questionToUpdate.setNmtypeQuest(type);
+        }
+
+        Question updated = service.updateQuestion(id, questionToUpdate);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         service.delete(id);
     }
 }
-

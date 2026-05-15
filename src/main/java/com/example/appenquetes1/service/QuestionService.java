@@ -25,9 +25,14 @@ public class QuestionService {
 
     public Question save(Question question) {
         System.out.println("=== SAVING QUESTION ===");
+        System.out.println("code: " + question.getCode());
+        System.out.println("titleFr: " + question.getTitleFr());
+        System.out.println("titleEn: " + question.getTitleEn());
         System.out.println("id_nm_type_quest: " + question.getIdNmTypeQuest());
         System.out.println("nmtypeQuest: " + question.getNmtypeQuest());
+        System.out.println("answers: " + (question.getAnswers() != null ? question.getAnswers().size() : 0));
         return repository.save(question);
+
     }
 
     public List<Question> findAll() {
@@ -42,13 +47,34 @@ public class QuestionService {
     public void delete(Integer id) {
         System.out.println("🔍 Suppression de la question ID: " + id);
 
-        // 1. Supprimer les liens section_question (table de liaison)
+        // 1. 🔥 D'abord, récupérer la question
+        Question question = repository.findById(id).orElse(null);
+        if (question == null) {
+            System.out.println("❌ Question non trouvée");
+            return;
+        }
+
+        // 2. 🔥 Dissocier cette question si elle est utilisée comme condition parent
+        if (question.getParentAnswer() != null) {
+            question.setParentAnswer(null);
+            repository.save(question);
+        }
+
+        // 3. 🔥 Chercher et dissocier les questions qui référencent cette question comme parent
+        List<Question> children = repository.findByParentAnswerQuestionId(id);
+        for (Question child : children) {
+            child.setParentAnswer(null);
+            repository.save(child);
+        }
+
+        // 4. 🔥 Supprimer les liens section_question
         sectionQuestionService.deleteByQuestionId(id);
 
-        // 2. Supprimer les réponses associées (question_answers et nm_answers)
-        questionAnswersService.deleteByQuestionId(id);
+        // 5. 🔥 SUPPRIMER LES RÉPONSES - Utiliser la méthode full qui gère tout
+        // NE PAS appeler deleteByQuestionId séparément !
+        questionAnswersService.deleteFullAnswersByQuestionId(id);
 
-        // 3. Enfin supprimer la question
+        // 6. 🔥 Enfin supprimer la question
         repository.deleteById(id);
 
         System.out.println("✅ Question supprimée avec succès");
@@ -69,36 +95,25 @@ public class QuestionService {
     public Question updateQuestion(Integer id, Question questionData) {
         System.out.println("=== UPDATING QUESTION ID: " + id + " ===");
 
-        // 1. Récupérer la question existante
         Question existingQuestion = repository.findById(id).orElse(null);
         if (existingQuestion == null) {
             return null;
         }
 
-        // 2. Mettre à jour les champs simples
+        // Mettre à jour uniquement les champs simples
         existingQuestion.setCode(questionData.getCode());
         existingQuestion.setTitleFr(questionData.getTitleFr());
         existingQuestion.setTitleEn(questionData.getTitleEn());
         existingQuestion.setNmtypeQuest(questionData.getNmtypeQuest());
 
-        // 3. Supprimer les anciennes réponses
-        System.out.println("🔍 Suppression des anciennes réponses...");
-        existingQuestion.getAnswers().clear();
+        // 🔥 SUPPRIMEZ CES LIGNES - Ne pas toucher aux réponses ici !
+        // existingQuestion.getAnswers().clear();
+        // if (questionData.getAnswers() != null) { ... }
 
-        // 4. Ajouter les nouvelles réponses
-        if (questionData.getAnswers() != null) {
-            for (QuestionAnswers newAnswer : questionData.getAnswers()) {
-                newAnswer.setQuestion(existingQuestion);
-                existingQuestion.getAnswers().add(newAnswer);
-            }
-        }
-
-        // 5. Sauvegarder
         Question saved = repository.save(existingQuestion);
-        System.out.println("✅ Question mise à jour avec " + saved.getAnswers().size() + " réponse(s)");
+        System.out.println("✅ Question mise à jour (ID: " + saved.getId() + ")");
         return saved;
     }
 
 
 }
-
