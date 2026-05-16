@@ -30,7 +30,7 @@ public class SectionMapper {
         List<QuestionResponseDTO> questions =
                 section.getSectionQuestions()
                         .stream()
-                        .filter(sq -> sq.getQuestion().getParentAnswer() == null)  // ← AJOUTER CE FILTRE
+                        .filter(sq -> sq.getQuestion() != null && sq.getQuestion().getParentAnswer() == null)  // ← AJOUTER CE FILTRE
                         .map(QuestionMapper::toDTO)
                         .toList();
 
