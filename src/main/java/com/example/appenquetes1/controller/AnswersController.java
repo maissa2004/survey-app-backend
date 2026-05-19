@@ -4,21 +4,30 @@ package com.example.appenquetes1.controller;
 import com.example.appenquetes1.dto.useranswer.UserAnswerRequestDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswerResponseDTO;
 import com.example.appenquetes1.dto.useranswer.UserAnswersSurvey;
+import com.example.appenquetes1.entity.Survey;
 import com.example.appenquetes1.entity.SurveySubmission;
+import com.example.appenquetes1.entity.User;
+import com.example.appenquetes1.repository.SurveyRepository;
 import com.example.appenquetes1.repository.SurveySubmissionRepository;
+import com.example.appenquetes1.repository.UserRepository;
 import com.example.appenquetes1.service.AnswersService;
+import com.example.appenquetes1.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/answers")
 public class AnswersController {
+
+    private static final Logger log = LoggerFactory.getLogger(AnswersController.class);
 
     @Autowired
     private AnswersService answersService;
@@ -27,15 +36,23 @@ public class AnswersController {
     @Autowired
     private SurveySubmissionRepository surveySubmissionRepository;
 
+    @Autowired
+    private SurveyRepository surveyRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private NotificationService notificationService;
+
+
     @PostMapping
     public ResponseEntity<UserAnswerResponseDTO> create(@RequestBody UserAnswerRequestDTO answer) {
         return ResponseEntity.ok(answersService.save(answer));
     }
+
     @PostMapping("/submit")
     public ResponseEntity<?> submitAnswers(@RequestBody UserAnswersSurvey answers, HttpServletRequest request) {
         Integer userIdToken = (Integer) request.getAttribute("userId");
         List<UserAnswerRequestDTO> ListAnswers = answers.getResponses();
-
 
         Integer finalUserId = userIdToken;
         if (finalUserId == null && answers.getIdUser() != null) {
@@ -44,11 +61,10 @@ public class AnswersController {
         if (finalUserId == null) {
             return ResponseEntity.badRequest().body("Utilisateur non identifié");
         }
-            Integer surveyId = answers.getIdSurvey();
+        Integer surveyId = answers.getIdSurvey();
         if (surveyId == null && !ListAnswers.isEmpty()) {
             surveyId = ListAnswers.get(0).getIdSurvey();
         }
-
 
         SurveySubmission submission = new SurveySubmission();
         submission.setUserId(finalUserId);
@@ -56,6 +72,23 @@ public class AnswersController {
         submission.setSubmissionDate(LocalDateTime.now());
         submission.setStatus("EN ATTENTE");
         SurveySubmission savedSubmission = surveySubmissionRepository.save(submission);
+
+        // Après savedSubmission - Envoyer notification aux admins
+        try {
+            // Récupérer les infos du survey et de l'enquêteur
+            Optional<Survey> surveyOpt = surveyRepository.findById(surveyId);
+            Optional<User> enqueteurOpt = userRepository.findById(finalUserId);
+
+            if (surveyOpt.isPresent() && enqueteurOpt.isPresent()) {
+                notificationService.createNotification(
+                        savedSubmission,
+                        surveyOpt.get().getLibelle(),
+                        enqueteurOpt.get().getUsername()
+                );
+            }
+        } catch (Exception e) {
+            log.error("Erreur création notification", e);
+        }
 
         //lier reponse a id submission (ensemble de reponse)
         for (UserAnswerRequestDTO answer : ListAnswers) {
@@ -69,6 +102,7 @@ public class AnswersController {
 
         return ResponseEntity.ok("Survey submitted successfully");
     }
+
     @PostMapping("/batch")
     public ResponseEntity<List<UserAnswerResponseDTO>> createBatch(@RequestBody List<UserAnswerRequestDTO> answers) {
         return ResponseEntity.ok(answersService.saveAll(answers));

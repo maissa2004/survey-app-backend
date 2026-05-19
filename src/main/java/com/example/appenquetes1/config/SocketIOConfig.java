@@ -15,6 +15,10 @@ public class SocketIOConfig {
         config.setAllowCustomRequests(true);
         SocketIOServer server = new SocketIOServer(config);
         server.start(); // démarrage immédiat
+        server.addEventListener("joinNotificationRoom", String.class, (client, data, ackRequest) -> {
+            client.joinRoom("notification_room");
+            System.out.println("Client joined notification_room");
+        });
         return server;
     }
 }

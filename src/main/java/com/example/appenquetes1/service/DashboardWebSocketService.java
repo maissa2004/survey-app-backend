@@ -1,6 +1,7 @@
 package com.example.appenquetes1.service;
 
 import com.corundumstudio.socketio.SocketIOServer;
+import com.example.appenquetes1.entity.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,11 @@ public class DashboardWebSocketService {
 
     public void emitNewSubmission(Object submission) {
         socketServer.getRoomOperations("dashboard_room").sendEvent("newSubmission", submission);
+    }
+
+    public void emitNewNotification(Notification notification) {
+        socketServer.getRoomOperations("dashboard_room").sendEvent("newNotification", notification);
+        socketServer.getRoomOperations("notification_room").sendEvent("newNotification", notification);
     }
 
     // Optionnel : gérer l'arrivée d'un client admin dans la room
